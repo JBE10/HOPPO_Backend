@@ -2,12 +2,15 @@ package com.example.HPPO_Backend.services;
 
 public class CategoryService {
     public String getCategories() {
-        return "List of categories";
+        CategoryService categoryService = new CategoryService();
+        return categoryService.getCategories();
     }
     public String getCategoryById(String categoryId) {
-        return "Category with ID: " + categoryId;
+        CategoryService categoryService = new CategoryService();
+        return categoryService.getCategoryById(categoryId);
     }
     public String createCategory(String category) {
-        return category;
+        CategoryService categoryService = new CategoryService();
+        return categoryService.createCategory(category);
     }
 }
