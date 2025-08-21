@@ -19,9 +19,9 @@ public class CategoryController {
         return categoryService.getCategoryById(categoryId);
     }
     @PostMapping()
-    public String createCategory(@RequestBody String category) {
+    public String createCategory(@RequestBody String categoryId) {
         CategoryService categoryService = new CategoryService();
 
-        return categoryService.createCategory(category);
+        return categoryService.createCategory(categoryId);
     }
 }
