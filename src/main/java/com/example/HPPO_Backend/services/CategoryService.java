@@ -1,16 +1,21 @@
 package com.example.HPPO_Backend.services;
 
+import com.example.HPPO_Backend.entities.Category;
+import com.example.HPPO_Backend.repositories.CategoryRepository;
+
+import java.util.ArrayList;
+
 public class CategoryService {
-    public String getCategories() {
-        CategoryService categoryService = new CategoryService();
-        return categoryService.getCategories();
+    public ArrayList<Category> getCategories() {
+        CategoryRepository categoryRepository = new CategoryRepository();
+        return categoryRepository.getCategories();
     }
-    public String getCategoryById(String categoryId) {
-        CategoryService categoryService = new CategoryService();
-        return categoryService.getCategoryById(categoryId);
+    public Category getCategoryById(int categoryId) {
+        CategoryRepository categoryRepository = new CategoryRepository();
+        return categoryRepository.getCategoryById(categoryId);
     }
-    public String createCategory(String category) {
-        CategoryService categoryService = new CategoryService();
-        return categoryService.createCategory(category);
+    public Category createCategory(Category category) {
+        CategoryRepository categoryRepository = new CategoryRepository();
+        return categoryRepository.createCategory(category);
     }
 }
