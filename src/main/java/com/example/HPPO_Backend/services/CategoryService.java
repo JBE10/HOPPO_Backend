@@ -4,18 +4,31 @@ import com.example.HPPO_Backend.entities.Category;
 import com.example.HPPO_Backend.repositories.CategoryRepository;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class CategoryService {
+    private CategoryRepository categoryRepository;
+
+    public CategoryService() {
+        categoryRepository = new CategoryRepository();
+    }
+
     public ArrayList<Category> getCategories() {
-        CategoryRepository categoryRepository = new CategoryRepository();
         return categoryRepository.getCategories();
     }
-    public Category getCategoryById(int categoryId) {
-        CategoryRepository categoryRepository = new CategoryRepository();
+
+    public Optional<Category> getCategoryById(int categoryId) {
         return categoryRepository.getCategoryById(categoryId);
     }
-    public Category createCategory(Category category) {
-        CategoryRepository categoryRepository = new CategoryRepository();
-        return categoryRepository.createCategory(category);
+
+    public Category createCategory(int categoryId, String Description) {
+
+        ArrayList<Category> categories = new CategoryRepository().getCategories();
+        if(categories.stream().anyMatch((c) -> c.getId() == categoryId)) {
+            throw new IllegalArgumentException("Category with this ID already exists");
+        } else {
+            Category category = Category.builder().id(categoryId).description(Description).build();
+            return categoryRepository.createCategory(category);
+        }
     }
 }
