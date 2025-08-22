@@ -1,10 +1,10 @@
 package com.example.HPPO_Backend.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import com.example.HPPO_Backend.entity.Category;
 import com.example.HPPO_Backend.entity.dto.CategoryRequest;
-import com.example.HPPO_Backend.exceptions.CategoryDuplicateException;
 import com.example.HPPO_Backend.service.CategoryService;
-import com.example.HPPO_Backend.service.CategoryServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,11 +14,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("categories")
+
+
+
 public class CategoriesController {
-    private CategoryServiceImpl categoryService ;
-    public CategoriesController() {
-        this.categoryService = new CategoryServiceImpl();
-    }
+    @Autowired
+    private CategoryService categoryService;
 
     @GetMapping
     public ResponseEntity<ArrayList<Category>> getCategories() {
@@ -28,7 +29,7 @@ public class CategoriesController {
     @GetMapping({"/{categoryId}"})
     public ResponseEntity<Category> getCategoryById(@PathVariable int categoryId) {
         Optional<Category> result = this.categoryService.getCategoryById(categoryId);
-        return result.isPresent() ? ResponseEntity.ok((Category)result.get()) : ResponseEntity.noContent().build();
+        return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PostMapping

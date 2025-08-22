@@ -1,13 +1,16 @@
 package com.example.HPPO_Backend.service;
+
 import com.example.HPPO_Backend.entity.Category;
 import com.example.HPPO_Backend.exceptions.CategoryDuplicateException;
 import com.example.HPPO_Backend.repository.CategoryRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
-
+@Service
 public class CategoryServiceImpl implements CategoryService {
+
     private CategoryRepository categoryRepository;
 
     public CategoryServiceImpl() {

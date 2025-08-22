@@ -6,7 +6,9 @@ import java.util.Optional;
 
 
 import com.example.HPPO_Backend.entity.Category;
+import lombok.Data;
 
+@Data
 public class CategoryRepository {
     private ArrayList<Category> categories;
 
