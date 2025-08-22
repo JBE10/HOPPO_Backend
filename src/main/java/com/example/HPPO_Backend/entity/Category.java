@@ -1,4 +1,4 @@
-package com.example.HPPO_Backend.entities;
+package com.example.HPPO_Backend.entity;
 
 import lombok.Builder;
 import lombok.Data;
@@ -8,5 +8,4 @@ import lombok.Data;
 public class Category {
     private int id;
     private String description;
-
 }
