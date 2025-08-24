@@ -1,11 +1,20 @@
 package com.example.HPPO_Backend.entity;
 
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+
+@Entity
 public class Category {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
     private String description;
+
+
+
 }

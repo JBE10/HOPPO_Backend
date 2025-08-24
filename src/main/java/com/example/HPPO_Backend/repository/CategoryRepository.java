@@ -2,36 +2,20 @@ package com.example.HPPO_Backend.repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 
 import com.example.HPPO_Backend.entity.Category;
+import com.example.HPPO_Backend.exceptions.CategoryDuplicateException;
 import lombok.Data;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-@Data
-public class CategoryRepository {
-    private ArrayList<Category> categories;
+@Repository
+public interface CategoryRepository extends JpaRepository<Category, Long> {
+    public List<Category> getCategories();
+    public Optional<Category> getCategoryById(Long categoryId);
+    public Category createCategory( String description) throws CategoryDuplicateException;
 
-    public CategoryRepository() {
-        categories = new ArrayList<Category>(
-                Arrays.asList(Category.builder().description("Electronica").id(1).build(),
-                        Category.builder().description("Cocina").id(2).build(),
-                        Category.builder().description("Gaming").id(3).build()));
-    }
-
-    public ArrayList<Category> getCategories() {
-        return this.categories;
-    }
-
-    public Optional<Category> getCategoryById(int categoryId) {
-        return this.categories.stream().filter(m -> m.getId() == categoryId).findAny();
-    }
-
-    public Category createCategory(int newCategoryId, String description) {
-        Category newCategory = Category.builder()
-                .description(description)
-                .id(newCategoryId).build();
-        this.categories.add(newCategory);
-        return newCategory;
-    }
 }
