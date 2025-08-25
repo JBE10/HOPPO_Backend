@@ -14,8 +14,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    public List<Category> getCategories();
-    public Optional<Category> getCategoryById(Long categoryId);
-    public Category createCategory( String description) throws CategoryDuplicateException;
+//    public List<Category> getCategories();
+//    public Optional<Category> getCategoryById(Long categoryId);
+//    public Category createCategory( String description) throws CategoryDuplicateException;
 
 }

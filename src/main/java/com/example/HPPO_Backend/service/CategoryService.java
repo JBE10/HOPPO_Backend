@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface CategoryService {
     public List<Category> getCategories();
     public Optional<Category> getCategoryById(Long categoryId);
-//    public Category createCategory(Long newCategoryId, String description) throws Exception;
+    public Category createCategory( String description) throws Exception;
 }

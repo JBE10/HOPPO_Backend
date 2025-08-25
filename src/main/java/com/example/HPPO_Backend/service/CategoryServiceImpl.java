@@ -24,11 +24,11 @@ public  class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findById(categoryId);
     }
 
-//    public Category createCategory(Long newCategoryId, String description) throws CategoryDuplicateException {
-//        ArrayList<Category> categories = categoryRepository.getCategories();
-//        if (categories.stream().anyMatch(
-//                category -> category.getId() == newCategoryId && category.getDescription().equals(description)))
-//            throw new CategoryDuplicateException();
-//        return categoryRepository.createCategory(newCategoryId, description);
-//    }
+    public Category createCategory( String description) throws CategoryDuplicateException {
+        List<Category> categories = categoryRepository.findAll();
+        if (categories.stream().anyMatch(
+                category -> category.getDescription().equals(description)))
+            throw new CategoryDuplicateException();
+        return categoryRepository.save( new Category(description));
+    }
 }

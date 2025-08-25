@@ -31,11 +31,11 @@ public class CategoriesController {
         return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 
-//    @PostMapping
-//    public ResponseEntity<Object> createCategory(@RequestBody CategoryRequest categoryRequest) throws Exception {
-//        Category result = this.categoryService.createCategory(categoryRequest.getId(), categoryRequest.getDescription());
-//        return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(result);
-//    }
+    @PostMapping
+    public ResponseEntity<Object> createCategory(@RequestBody CategoryRequest categoryRequest) throws Exception {
+        Category result = this.categoryService.createCategory( categoryRequest.getDescription());
+        return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(result);
+    }
 
 
 }
