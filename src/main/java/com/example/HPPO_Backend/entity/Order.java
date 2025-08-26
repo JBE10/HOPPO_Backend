@@ -1,10 +1,7 @@
 package com.example.HPPO_Backend.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.util.Date;
 
 @Entity
 @Data
@@ -13,13 +10,15 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private Double total;
+    @Column(nullable = false)
+    private String address;
 
-    @Column
-    private Date date;
+    @Column(nullable = false)
+    private String shipping;
 
-    @Column
+    @Column(name = "cart_id")
+    private Long cartId;
+
+    @Column(name = "user_id")
     private Long userId;
-//pasantias su eb ka utn
 }
