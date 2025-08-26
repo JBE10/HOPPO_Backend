@@ -6,7 +6,6 @@ import com.example.HPPO_Backend.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,10 +24,10 @@ public  class CategoryServiceImpl implements CategoryService {
     }
 
     public Category createCategory( String description) throws CategoryDuplicateException {
-        List<Category> categories = categoryRepository.findAll();
-        if (categories.stream().anyMatch(
-                category -> category.getDescription().equals(description)))
-            throw new CategoryDuplicateException();
-        return categoryRepository.save( new Category(description));
+        List<Category> categories = categoryRepository.findByName(description);
+        if (categories.isEmpty()) {
+        return categoryRepository.save(new Category(description));
+        }
+        throw new CategoryDuplicateException();
     }
 }
