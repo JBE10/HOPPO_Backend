@@ -29,9 +29,10 @@ public class UserServiceImpl implements UserService {
             User newUser = new User();
             newUser.setUsername(userRequest.getUsername());
             newUser.setPassword(userRequest.getPassword());
+            newUser.setEmail(userRequest.getEmail());
+            newUser.setRole(userRequest.getRole());
             newUser.setName(userRequest.getName());
             newUser.setLastName(userRequest.getLastName());
-            newUser.setRoleId(userRequest.getRoleId());
             return userRepository.save(newUser);
         }
         throw new UserDuplicateException();
