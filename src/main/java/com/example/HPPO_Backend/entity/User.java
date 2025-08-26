@@ -1,6 +1,5 @@
 package com.example.HPPO_Backend.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -11,18 +10,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @Column
+    @Column(nullable = false)
     private String username;
-    @Column
+
+    @Column(nullable = false)
     private String password;
-    @Column
-    private String email;
-    @Column
-    private String role;
-    @Column
+
+    @Column(nullable = false)
     private String name;
-    @Column
+
+    @Column(nullable = false)
     private String lastName;
 
+    @Column(name = "role_id")
+    private Long roleId;
 }

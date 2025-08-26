@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Cart {
+public class CartProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,6 +13,9 @@ public class Cart {
     @Column
     private Integer quantity;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @Column(name = "product_id")
+    private Long productId;
+
+    @Column(name = "cart_id")
+    private Long cartId;
 }
