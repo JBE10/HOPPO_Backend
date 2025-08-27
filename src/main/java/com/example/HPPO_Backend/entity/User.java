@@ -3,6 +3,8 @@ package com.example.HPPO_Backend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 public class User {
@@ -21,13 +23,14 @@ public class User {
 
     @Column(nullable = false)
     private String lastName;
+    @Column
+    private String email;
 
-<<<<<<< codex/create-controllers,-services,-repositories-for-new-entities-4mwprd
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
-=======
-    @Column(name = "role_id")
-    private Long roleId;
->>>>>>> main
+
+    @OneToMany(mappedBy = "user")
+    List<Order> orders;
+
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
+
+@Table(name = "orders")
 @Data
 public class Order {
     @Id
@@ -16,9 +18,12 @@ public class Order {
     @Column(nullable = false)
     private String shipping;
 
+
+
     @Column(name = "cart_id")
     private Long cartId;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
