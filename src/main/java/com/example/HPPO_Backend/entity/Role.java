@@ -1,4 +1,9 @@
 package com.example.HPPO_Backend.entity;
 
-public class Role {
+/**
+ * Enumeración de roles disponibles para los usuarios del sistema.
+ */
+public enum Role {
+    VENDEDOR,
+    COMPRADOR
 }
