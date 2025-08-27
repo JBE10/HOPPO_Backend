@@ -24,9 +24,11 @@ public class OrderServiceImpl implements OrderService {
 
     public Order createOrder(OrderRequest orderRequest) {
         Order newOrder = new Order();
+
         newOrder.setAddress(orderRequest.getAddress());
         newOrder.setShipping(orderRequest.getShipping());
         newOrder.setCartId(orderRequest.getCartId());
+
         newOrder.setUserId(orderRequest.getUserId());
         return orderRepository.save(newOrder);
     }

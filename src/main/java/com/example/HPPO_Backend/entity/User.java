@@ -22,7 +22,12 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
+<<<<<<< codex/create-controllers,-services,-repositories-for-new-entities-4mwprd
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+=======
+    @Column(name = "role_id")
+    private Long roleId;
+>>>>>>> main
 }
