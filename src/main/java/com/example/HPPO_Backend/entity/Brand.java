@@ -3,6 +3,8 @@ package com.example.HPPO_Backend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
 public class Brand {
@@ -12,4 +14,8 @@ public class Brand {
 
     @Column(nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "brand")
+    private List<Product> products;
+
 }

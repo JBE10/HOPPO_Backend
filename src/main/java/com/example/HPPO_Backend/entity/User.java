@@ -8,8 +8,10 @@ import java.util.List;
 @Entity
 @Data
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_user")
     private Long id;
 
     @Column(nullable = false)
@@ -23,6 +25,7 @@ public class User {
 
     @Column(nullable = false)
     private String lastName;
+
     @Column
     private String email;
 
@@ -31,6 +34,8 @@ public class User {
     private Role role;
 
     @OneToMany(mappedBy = "user")
-    List<Order> orders;
+    private List<Order> orders;
 
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
 }

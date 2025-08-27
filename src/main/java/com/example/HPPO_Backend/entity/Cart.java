@@ -2,6 +2,7 @@ package com.example.HPPO_Backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.util.List;
 
 @Data
 @Entity
@@ -13,6 +14,14 @@ public class Cart {
     @Column
     private Integer quantity;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    @OneToOne
+    @Column(name = "order_id")
+    private Order order;
+
+    @OneToMany
+    private List<CartProduct> items;
 }

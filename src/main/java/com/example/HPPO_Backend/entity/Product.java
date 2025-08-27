@@ -3,6 +3,8 @@ package com.example.HPPO_Backend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
 public class Product {
@@ -27,4 +29,15 @@ public class Product {
 
     @Column(name = "category_id")
     private Long categoryId;
+
+    @OneToMany
+    private List<CartProduct> cartItems;
+
+    @ManyToOne
+    @JoinColumn(name = "id_brand")
+    private Brand brand;
+
+    @ManyToOne
+    @JoinColumn(name = "id_category")
+    private Category category;
 }
