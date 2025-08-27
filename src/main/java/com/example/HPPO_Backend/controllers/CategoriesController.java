@@ -23,6 +23,7 @@ public class CategoriesController {
     private CategoryService categoryService;
 
     @GetMapping
+
     public ResponseEntity<Page<Category>> getCategories(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
