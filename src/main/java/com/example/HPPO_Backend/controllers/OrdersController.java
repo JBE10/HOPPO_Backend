@@ -4,12 +4,14 @@ import com.example.HPPO_Backend.entity.Order;
 import com.example.HPPO_Backend.entity.dto.OrderRequest;
 import com.example.HPPO_Backend.service.OrderService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -19,8 +21,12 @@ public class OrdersController {
     private OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<List<Order>> getOrders() {
-        return ResponseEntity.ok(this.orderService.getOrders());
+    public ResponseEntity<Page<Order>> getOrders(
+        @RequestParam(required = false) Integer page,
+        @RequestParam(required = false) Integer size){
+            if (page == null || size == null) 
+                return ResponseEntity.ok(orderService.getOrders(PageRequest.of(0, Integer.MAX_VALUE)));
+            return ResponseEntity.ok(orderService.getOrders(PageRequest.of(page, size)));
     }
 
     @GetMapping({"/{orderId}"})
