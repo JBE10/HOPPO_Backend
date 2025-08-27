@@ -7,12 +7,15 @@ import com.example.HPPO_Backend.entity.dto.OrderRequest;
 import com.example.HPPO_Backend.repository.CartRepository;
 import com.example.HPPO_Backend.repository.OrderRepository;
 import com.example.HPPO_Backend.repository.UserRepository;
+
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -29,8 +32,8 @@ public class OrderServiceImpl implements OrderService {
         this.cartRepository = cartRepository;
     }
 
-    public List<Order> getOrders() {
-        return orderRepository.findAll();
+    public Page<Order> getOrders(PageRequest pageable) {
+        return orderRepository.findAll(pageable);
     }
 
     public Optional<Order> getOrderById(Long orderId) {
