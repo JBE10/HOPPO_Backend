@@ -33,22 +33,22 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     public Order createOrder(OrderRequest orderRequest) {
-        // 1) Traer el usuario dueño de la orden
+
         User user = userRepository.findById(orderRequest.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: id=" + orderRequest.getUserId()));
 
-        // 2) Mapear el DTO → entidad
+
         Order newOrder = new Order();
         newOrder.setAddress(orderRequest.getAddress());
         newOrder.setShipping(orderRequest.getShipping());
         newOrder.setCartId(orderRequest.getCartId());
-        newOrder.setUser(user); // <— clave: setear el objeto User
+        newOrder.setUser(user);
 
-        // (Opcional: si agregaste total/fecha)
+
          newOrder.setTotal(orderRequest.getTotal());
          newOrder.setOrderDate(LocalDateTime.now());
 
-        // 3) Guardar
+
         return orderRepository.save(newOrder);
     }
 }
