@@ -1,0 +1,11 @@
+# Compilados de Maven
+target/
+
+# Configuración de IDEs
+.idea/
+.vscode/
+*.iml
+
+# Archivos del SO
+.DS_Store
+target/
