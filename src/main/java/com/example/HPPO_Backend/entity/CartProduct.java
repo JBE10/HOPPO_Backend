@@ -18,4 +18,13 @@ public class CartProduct {
 
     @Column(name = "cart_id")
     private Long cartId;
+
+    @ManyToOne
+    @JoinColumn(name = "id_cart")
+    private Cart cart;
+
+    @ManyToOne
+    @JoinColumn(name = "id_product")
+    private Product product;
+
 }
