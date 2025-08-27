@@ -24,9 +24,9 @@ public class CartProductServiceImpl implements CartProductService {
 
     public CartProduct createCartProduct(CartProductRequest request) {
         CartProduct cp = new CartProduct();
-        cp.setQuantity(request.getQuantity());
-        cp.setProductId(request.getProductId());
-        cp.setCartId(request.getCartId());
+//        cp.setQuantity(request.getQuantity());
+//        cp.setProductId(request.getProductId());
+//        cp.setCartId(request.getCartId());
         return cartProductRepository.save(cp);
     }
 }

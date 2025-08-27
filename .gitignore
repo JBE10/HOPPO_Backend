@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 # Compilados de Maven
 target/
 
@@ -8,4 +10,5 @@ target/
 
 # Archivos del SO
 .DS_Store
+>>>>>>> marco
 target/
