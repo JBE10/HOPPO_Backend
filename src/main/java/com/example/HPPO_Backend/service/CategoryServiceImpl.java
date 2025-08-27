@@ -3,8 +3,11 @@ package com.example.HPPO_Backend.service;
 import com.example.HPPO_Backend.entity.Category;
 import com.example.HPPO_Backend.exceptions.CategoryDuplicateException;
 import com.example.HPPO_Backend.repository.CategoryRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +17,8 @@ public  class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-
-    public List<Category> getCategories() {
-        return categoryRepository.findAll();
+    public Page<Category> getCategories(PageRequest pageable) {
+        return categoryRepository.findAll(pageable);
     }
 
     public Optional<Category> getCategoryById(Long categoryId) {
