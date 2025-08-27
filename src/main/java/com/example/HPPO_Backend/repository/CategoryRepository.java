@@ -7,8 +7,7 @@ import java.util.Optional;
 
 
 import com.example.HPPO_Backend.entity.Category;
-import com.example.HPPO_Backend.exceptions.CategoryDuplicateException;
-import lombok.Data;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
