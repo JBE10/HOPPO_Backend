@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 @Entity
+@Table(name = "carts")
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,12 +16,12 @@ public class Cart {
     private Integer quantity;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", referencedColumnName = "id_user")
     private User user;
 
     @OneToOne
-    @Column(name = "order_id")
-    private Order order;
+    @JoinColumn(name = "purchase_order_id")
+    private Order purchaseOrder;
 
     @OneToMany
     private List<CartProduct> items;
