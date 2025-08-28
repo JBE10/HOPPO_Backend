@@ -13,11 +13,6 @@ public class CartProduct {
     @Column
     private Integer quantity;
 
-    @Column(name = "product_id")
-    private Long productId;
-
-    @Column(name = "cart_id")
-    private Long cartId;
 
     @ManyToOne
     @JoinColumn(name = "id_cart")

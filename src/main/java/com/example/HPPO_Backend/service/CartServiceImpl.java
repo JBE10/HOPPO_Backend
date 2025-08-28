@@ -7,7 +7,9 @@ import com.example.HPPO_Backend.repository.CartRepository;
 import com.example.HPPO_Backend.repository.UserRepository;   // <-- repo de User
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -32,15 +34,23 @@ public class CartServiceImpl implements CartService {
     }
 
     public Cart createCart(CartRequest cartRequest) {
-        // traer el user por ID
+        if (cartRequest.getUserId() == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId es obligatorio");
+
+
+        Optional<Cart> existing = cartRepository.findByUserId(cartRequest.getUserId());
+        if (existing.isPresent()) {
+            return existing.get(); // idempotente: devolvés el existente
+            // alternativo: throw new ResponseStatusException(HttpStatus.CONFLICT, "El usuario ya tiene carrito");
+        }
+
         User user = userRepository.findById(cartRequest.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Usuario no encontrado: id=" + cartRequest.getUserId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: id=" + cartRequest.getUserId()));
 
         Cart cart = new Cart();
-        cart.setQuantity(cartRequest.getQuantity());
-        cart.setUser(user);  // <-- ahora compila
-
+        cart.setQuantity(cartRequest.getQuantity() == null ? 0 : cartRequest.getQuantity());
+        cart.setUser(user);
         return cartRepository.save(cart);
     }
+
 }

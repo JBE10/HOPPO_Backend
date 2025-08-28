@@ -6,28 +6,21 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-
 @Table(name = "orders")
 @Data
 public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String address;
+    @Column(nullable = false) private String address;
+    @Column(nullable = false) private String shipping;
+    @Column private Double total;
 
-    @Column(nullable = false)
-    private String shipping;
-
-    @Column
-    private Double total;
-
-    @Column(name = "order_date")
+    @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
 
     @OneToOne
-    @JoinColumn(name = "cart_id", nullable = false)
+    @JoinColumn(name = "cart_id", nullable = false) // FK aquí
     private Cart cart;
 
     @ManyToOne

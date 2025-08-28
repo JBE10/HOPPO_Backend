@@ -4,22 +4,19 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
 
-@Data
 @Entity
+@Data
 public class Cart {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private Integer quantity;
+    @Column private Integer quantity;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @OneToOne
-    @Column(name = "order_id")
+    @OneToOne(mappedBy = "cart")   // <- inverso de Order.cart
     private Order order;
 
     @OneToMany
