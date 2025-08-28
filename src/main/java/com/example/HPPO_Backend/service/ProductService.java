@@ -13,4 +13,8 @@ public interface ProductService {
     public Page<Product> getProducts(PageRequest pageRequest);
     Optional<Product> getProductById(Long productId);
     Product createProduct(ProductRequest productRequest) throws ProductDuplicateException;
+
+    void deleteProduct(Long productId);
+
+    Product updateProduct(Long productId, ProductRequest productRequest);
 }

@@ -20,7 +20,7 @@ public class Order {
     private LocalDateTime orderDate;
 
     @OneToOne
-    @JoinColumn(name = "cart_id", nullable = false) // FK aquí
+    @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
     @ManyToOne

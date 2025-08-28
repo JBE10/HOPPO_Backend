@@ -1,10 +1,16 @@
 package com.example.HPPO_Backend.service;
 
+import com.example.HPPO_Backend.entity.Cart;
 import com.example.HPPO_Backend.entity.CartProduct;
+import com.example.HPPO_Backend.entity.Product;
 import com.example.HPPO_Backend.entity.dto.CartProductRequest;
 import com.example.HPPO_Backend.repository.CartProductRepository;
+import com.example.HPPO_Backend.repository.CartRepository;
+import com.example.HPPO_Backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +19,11 @@ import java.util.Optional;
 public class CartProductServiceImpl implements CartProductService {
     @Autowired
     private CartProductRepository cartProductRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private CartRepository cartRepository;
+
 
     public List<CartProduct> getCartProducts() {
         return cartProductRepository.findAll();
@@ -23,10 +34,19 @@ public class CartProductServiceImpl implements CartProductService {
     }
 
     public CartProduct createCartProduct(CartProductRequest request) {
+        // Buscamos las entidades para asociarlas
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
+
+        Cart cart = cartRepository.findById(request.getCartId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado"));
+
+        // Creamos la nueva entidad CartProduct
         CartProduct cp = new CartProduct();
-//        cp.setQuantity(request.getQuantity());
-//        cp.setProductId(request.getProductId());
-//        cp.setCartId(request.getCartId());
+        cp.setQuantity(request.getQuantity());
+        cp.setProduct(product);
+        cp.setCart(cart);
+
         return cartProductRepository.save(cp);
     }
 }

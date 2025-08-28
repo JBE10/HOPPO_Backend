@@ -9,8 +9,10 @@ import com.example.HPPO_Backend.repository.OrderRepository;
 import com.example.HPPO_Backend.repository.UserRepository;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -43,10 +45,14 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order createOrder(OrderRequest orderRequest) {
         User user = userRepository.findById(orderRequest.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: id=" + orderRequest.getUserId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: id=" + orderRequest.getUserId()));
 
         Cart cart = cartRepository.findById(orderRequest.getCartId())
-                .orElseThrow(() -> new IllegalArgumentException("Carrito no encontrado: id=" + orderRequest.getCartId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado: id=" + orderRequest.getCartId()));
+
+        if(orderRepository.findByCartId(orderRequest.getCartId()).isPresent()){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El carrito ya se encuentra en una orden.");
+        }
 
         Order newOrder = new Order();
         newOrder.setAddress(orderRequest.getAddress());
@@ -54,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
         newOrder.setTotal(orderRequest.getTotal());
         newOrder.setOrderDate(LocalDateTime.now());
         newOrder.setUser(user);
-        newOrder.setCart(cart); // <- acá
+        newOrder.setCart(cart);
 
         return orderRepository.save(newOrder);
     }
