@@ -76,15 +76,11 @@ public class OrderServiceImpl implements OrderService {
         if (order.getStatus() == OrderStatus.CANCELLED) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "La orden ya ha sido cancelada.");
         }
-
-
         for (CartProduct item : order.getCart().getItems()) {
             Product product = item.getProduct();
             product.setStock(product.getStock() + item.getQuantity());
 
         }
-
-
         order.setStatus(OrderStatus.CANCELLED);
         return orderRepository.save(order);
     }
