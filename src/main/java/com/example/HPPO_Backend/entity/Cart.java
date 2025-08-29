@@ -1,5 +1,6 @@
 package com.example.HPPO_Backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
@@ -16,7 +17,8 @@ public class Cart {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @OneToOne(mappedBy = "cart")   // <- inverso de Order.cart
+    @OneToOne(mappedBy = "cart")
+    @JsonIgnore
     private Order order;
 
     @OneToMany

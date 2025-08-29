@@ -33,7 +33,7 @@ public class Order {
     private OrderStatus status; // <-- NUEVO CAMPO
 
 
-
+    @PrePersist
     public void prePersist() {
         if (status == null) {
             status = OrderStatus.CREATED;
