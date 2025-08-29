@@ -1,4 +1,4 @@
-package com.example.HPPO_Backend.controllers;
+package com.example.HPPO_Backend.controllers.ecom;
 
 import com.example.HPPO_Backend.entity.Brand;
 import com.example.HPPO_Backend.entity.dto.BrandRequest;

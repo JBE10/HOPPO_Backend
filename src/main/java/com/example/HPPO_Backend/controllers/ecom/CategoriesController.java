@@ -1,4 +1,4 @@
-package com.example.HPPO_Backend.controllers;
+package com.example.HPPO_Backend.controllers.ecom;
 
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
