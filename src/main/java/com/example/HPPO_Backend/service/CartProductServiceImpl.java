@@ -33,7 +33,7 @@ public class CartProductServiceImpl implements CartProductService {
         return cartProductRepository.findById(id);
     }
 
-
+    @Transactional
     public CartProduct createCartProduct(CartProductRequest request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
@@ -41,16 +41,12 @@ public class CartProductServiceImpl implements CartProductService {
         Cart cart = cartRepository.findById(request.getCartId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado"));
 
-
         if (product.getStock() < request.getQuantity()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "No hay suficiente stock para el producto: " + product.getName());
         }
 
-
         int newStock = product.getStock() - request.getQuantity();
         product.setStock(newStock);
-        productRepository.save(product); // Guardamos el producto actualizado
-
 
         CartProduct cp = new CartProduct();
         cp.setQuantity(request.getQuantity());
