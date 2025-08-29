@@ -33,4 +33,9 @@ public class CartProductsController {
         CartProduct result = this.cartProductService.createCartProduct(request);
         return ResponseEntity.created(URI.create("/cart-products/" + result.getId())).body(result);
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCartProduct(@PathVariable Long id) {
+        this.cartProductService.deleteCartProduct(id);
+        return ResponseEntity.noContent().build();
+    }
 }

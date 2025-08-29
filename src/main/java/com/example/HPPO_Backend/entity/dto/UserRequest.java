@@ -12,3 +12,4 @@ public class UserRequest {
     private String name;
     private String lastName;
 }
+//@jsonignore

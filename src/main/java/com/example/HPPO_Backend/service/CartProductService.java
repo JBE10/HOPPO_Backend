@@ -10,4 +10,5 @@ public interface CartProductService {
     List<CartProduct> getCartProducts();
     Optional<CartProduct> getCartProductById(Long id);
     CartProduct createCartProduct(CartProductRequest request);
+    void deleteCartProduct(Long id);
 }

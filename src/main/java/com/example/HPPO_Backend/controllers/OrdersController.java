@@ -40,4 +40,9 @@ public class OrdersController {
         Order result = this.orderService.createOrder(orderRequest);
         return ResponseEntity.created(URI.create("/orders/" + result.getId())).body(result);
     }
+    @PatchMapping("/{orderId}/cancel")
+    public ResponseEntity<Order> cancelOrder(@PathVariable Long orderId) {
+        Order cancelledOrder = this.orderService.cancelOrder(orderId);
+        return ResponseEntity.ok(cancelledOrder);
+    }
 }

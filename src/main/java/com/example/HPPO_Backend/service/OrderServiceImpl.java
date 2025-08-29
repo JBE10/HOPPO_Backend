@@ -1,8 +1,6 @@
 package com.example.HPPO_Backend.service;
 
-import com.example.HPPO_Backend.entity.Cart;
-import com.example.HPPO_Backend.entity.Order;
-import com.example.HPPO_Backend.entity.User;
+import com.example.HPPO_Backend.entity.*;
 import com.example.HPPO_Backend.entity.dto.OrderRequest;
 import com.example.HPPO_Backend.repository.CartRepository;
 import com.example.HPPO_Backend.repository.OrderRepository;
@@ -33,7 +31,6 @@ public class OrderServiceImpl implements OrderService {
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
     }
-
     public Page<Order> getOrders(PageRequest pageable) {
         return orderRepository.findAll(pageable);
     }
@@ -54,14 +51,42 @@ public class OrderServiceImpl implements OrderService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El carrito ya se encuentra en una orden.");
         }
 
+
+        Double total = 0.0;
+        for (CartProduct item : cart.getItems()) {
+            total += item.getProduct().getPrice() * item.getQuantity();
+        }
+
         Order newOrder = new Order();
         newOrder.setAddress(orderRequest.getAddress());
         newOrder.setShipping(orderRequest.getShipping());
-        newOrder.setTotal(orderRequest.getTotal());
+        newOrder.setTotal(total);
         newOrder.setOrderDate(LocalDateTime.now());
         newOrder.setUser(user);
         newOrder.setCart(cart);
 
         return orderRepository.save(newOrder);
     }
+    @Override
+    @Transactional
+    public Order cancelOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Orden no encontrada"));
+
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "La orden ya ha sido cancelada.");
+        }
+
+
+        for (CartProduct item : order.getCart().getItems()) {
+            Product product = item.getProduct();
+            product.setStock(product.getStock() + item.getQuantity());
+
+        }
+
+
+        order.setStatus(OrderStatus.CANCELLED);
+        return orderRepository.save(order);
+    }
+
 }

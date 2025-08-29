@@ -26,4 +26,18 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status; // <-- NUEVO CAMPO
+
+
+
+    public void prePersist() {
+        if (status == null) {
+            status = OrderStatus.CREATED;
+        }
+
+    }
 }

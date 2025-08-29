@@ -59,4 +59,22 @@ public class CartProductServiceImpl implements CartProductService {
 
         return cartProductRepository.save(cp);
     }
+    @Override
+    @Transactional
+    public void deleteCartProduct(Long id) {
+
+        CartProduct cartProduct = cartProductRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item del carrito no encontrado"));
+
+
+        Product product = cartProduct.getProduct();
+        int quantityToReturn = cartProduct.getQuantity();
+
+
+        product.setStock(product.getStock() + quantityToReturn);
+        productRepository.save(product);
+
+
+        cartProductRepository.delete(cartProduct);
+    }
 }

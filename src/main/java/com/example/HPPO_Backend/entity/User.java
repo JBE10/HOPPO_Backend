@@ -33,9 +33,9 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany
     private List<Order> orders;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne
     private Cart cart;
 }
