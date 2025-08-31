@@ -1,4 +1,4 @@
-package com.example.HPPO_Backend.controllers.auth;
+package com.example.HPPO_Backend.auth;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

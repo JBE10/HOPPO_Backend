@@ -1,4 +1,4 @@
-package com.example.HPPO_Backend.controllers.auth;
+package com.example.HPPO_Backend.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

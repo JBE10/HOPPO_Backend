@@ -6,10 +6,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.HPPO_Backend.controllers.auth.AuthenticationRequest;
-import com.example.HPPO_Backend.controllers.auth.AuthenticationResponse;
-import com.example.HPPO_Backend.controllers.auth.RegisterRequest;
-import com.example.HPPO_Backend.controllers.config.JwtService;
+import com.example.HPPO_Backend.auth.AuthenticationRequest;
+import com.example.HPPO_Backend.auth.AuthenticationResponse;
+import com.example.HPPO_Backend.auth.RegisterRequest;
+import com.example.HPPO_Backend.config.JwtService;
 import com.example.HPPO_Backend.entity.User;
 import com.example.HPPO_Backend.repository.UserRepository;
 

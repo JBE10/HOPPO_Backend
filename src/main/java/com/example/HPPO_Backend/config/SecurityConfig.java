@@ -1,4 +1,4 @@
-package com.example.HPPO_Backend.controllers.config;
+package com.example.HPPO_Backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.example.HPPO_Backend.controllers.config;
+package com.example.HPPO_Backend.config;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
