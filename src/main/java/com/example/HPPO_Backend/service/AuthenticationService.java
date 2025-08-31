@@ -1,5 +1,6 @@
 package com.example.HPPO_Backend.service;
 
+import com.example.HPPO_Backend.entity.Role;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +30,7 @@ public class AuthenticationService {
                 user.setLastName(request.getLastname());
                 user.setEmail(request.getEmail());
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
-                user.setRole(request.getRole());
+                user.setRole(Role.COMPRADOR);
 
                 repository.save(user);
                 var jwtToken = jwtService.generateToken(user);

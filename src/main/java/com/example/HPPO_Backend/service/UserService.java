@@ -12,5 +12,5 @@ import org.springframework.data.domain.PageRequest;
 public interface UserService {
     Page<User> getUsers(PageRequest pageRequest);
     Optional<User> getUserById(Long userId);
-    User createUser(UserRequest userRequest) throws UserDuplicateException;
+
 }
