@@ -23,14 +23,15 @@ public class Product {
     @Column(nullable = false)
     private Integer stock;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Un producto pertenece a una marca
-    @JoinColumn(name = "brand_id")     // La columna FK en la tabla 'product'
-    @JsonIgnore // Evita bucles infinitos
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    @JsonIgnore
     private Brand brand;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     @JsonIgnore
     private Category category;
+
 
 }
