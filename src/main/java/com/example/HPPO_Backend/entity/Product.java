@@ -1,5 +1,6 @@
 package com.example.HPPO_Backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,9 +23,14 @@ public class Product {
     @Column(nullable = false)
     private Integer stock;
 
-    @Column(name = "brand_id")
-    private Long brandId;
+    @ManyToOne(fetch = FetchType.LAZY) // Un producto pertenece a una marca
+    @JoinColumn(name = "brand_id")     // La columna FK en la tabla 'product'
+    @JsonIgnore // Evita bucles infinitos
+    private Brand brand;
 
-    @Column(name = "category_id")
-    private Long categoryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    @JsonIgnore
+    private Category category;
+
 }
