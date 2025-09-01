@@ -6,10 +6,5 @@ import lombok.Data;
 
 public enum Role {
     VENDEDOR,
-    COMPRADOR,
-    ADMIN
-
-
-
-
+    COMPRADOR
 }

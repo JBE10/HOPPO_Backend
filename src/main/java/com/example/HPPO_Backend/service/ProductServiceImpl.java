@@ -1,8 +1,6 @@
 package com.example.HPPO_Backend.service;
 
-import com.example.HPPO_Backend.entity.Brand;
-import com.example.HPPO_Backend.entity.Category;
-import com.example.HPPO_Backend.entity.Product;
+import com.example.HPPO_Backend.entity.*;
 import com.example.HPPO_Backend.entity.dto.ProductRequest;
 import com.example.HPPO_Backend.exceptions.ProductDuplicateException;
 import com.example.HPPO_Backend.repository.BrandRepository;
@@ -13,10 +11,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -30,45 +30,64 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private BrandRepository brandRepository;
 
+    @Override
     public Page<Product> getProducts(PageRequest pageable) {
         return productRepository.findAll(pageable);
     }
 
+    @Override
     public Optional<Product> getProductById(Long productId) {
         return productRepository.findById(productId);
     }
 
+    @Override
     public Product createProduct(ProductRequest productRequest) throws ProductDuplicateException {
 
-        Category category = categoryRepository.findById(productRequest.getCategoryId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoría no encontrada"));
-        Brand brand = brandRepository.findById(productRequest.getBrandId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Marca no encontrada"));
-
-        List<Product> products = productRepository.findByName(productRequest.getName());
-        if (products.isEmpty()) {
-            Product product = new Product();
-            product.setName(productRequest.getName());
-            product.setPrice(productRequest.getPrice());
-            product.setDescription(productRequest.getDescription());
-            product.setStock(productRequest.getStock());
-            product.setBrand(brand);
-            product.setCategory(category);
-            return productRepository.save(product);
+        if (!productRepository.findByName(productRequest.getName()).isEmpty()) {
+            throw new ProductDuplicateException();
         }
-        throw new ProductDuplicateException();
+
+
+        Category category = categoryRepository.findById(productRequest.getCategoryId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoría no encontrada con id: " + productRequest.getCategoryId()));
+        Brand brand = brandRepository.findById(productRequest.getBrandId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Marca no encontrada con id: " + productRequest.getBrandId()));
+
+
+        Product product = new Product();
+        product.setName(productRequest.getName());
+        product.setPrice(productRequest.getPrice());
+        product.setDescription(productRequest.getDescription());
+        product.setStock(productRequest.getStock());
+        product.setBrand(brand);
+        product.setCategory(category);
+
+
+
+        if (productRequest.getImageUrls() != null && !productRequest.getImageUrls().isEmpty()) {
+            List<ProductImage> images = productRequest.getImageUrls().stream()
+                    .map(url -> new ProductImage(url, product))
+                    .collect(Collectors.toList());
+            product.setImages(images);
+        }
+
+        // 5. Guarda el nuevo producto (y sus imágenes en cascada)
+        return productRepository.save(product);
     }
 
     @Override
+    @Transactional
     public Product updateProduct(Long productId, ProductRequest productRequest) {
-        // Busca la categoría y la marca por sus IDs
-        Category category = categoryRepository.findById(productRequest.getCategoryId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoría no encontrada"));
-        Brand brand = brandRepository.findById(productRequest.getBrandId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Marca no encontrada"));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productId));
+
+
+        Category category = categoryRepository.findById(productRequest.getCategoryId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoría no encontrada con id: " + productRequest.getCategoryId()));
+        Brand brand = brandRepository.findById(productRequest.getBrandId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Marca no encontrada con id: " + productRequest.getBrandId()));
+
 
         product.setName(productRequest.getName());
         product.setPrice(productRequest.getPrice());
@@ -77,13 +96,26 @@ public class ProductServiceImpl implements ProductService {
         product.setBrand(brand);
         product.setCategory(category);
 
+
+        if (product.getImages() != null) {
+            product.getImages().clear();
+        }
+        if (productRequest.getImageUrls() != null && !productRequest.getImageUrls().isEmpty()) {
+            List<ProductImage> newImages = productRequest.getImageUrls().stream()
+                    .map(url -> new ProductImage(url, product))
+                    .collect(Collectors.toList());
+            product.getImages().addAll(newImages);
+        }
+
+
         return productRepository.save(product);
     }
 
     @Override
     public void deleteProduct(Long productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
-        productRepository.delete(product);
+        if (!productRepository.existsById(productId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productId);
+        }
+        productRepository.deleteById(productId);
     }
 }
