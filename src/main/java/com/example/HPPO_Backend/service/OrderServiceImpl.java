@@ -39,18 +39,22 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findById(orderId);
     }
 
+    @Override
     @Transactional
-    public Order createOrder(OrderRequest orderRequest) {
-        User user = userRepository.findById(orderRequest.getUserId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: id=" + orderRequest.getUserId()));
+    public Order createOrder(OrderRequest orderRequest, User user) {
+
 
         Cart cart = cartRepository.findById(orderRequest.getCartId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado: id=" + orderRequest.getCartId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado"));
+
+
+        if (!cart.getUser().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para usar este carrito.");
+        }
 
         if(orderRepository.findByCartId(orderRequest.getCartId()).isPresent()){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El carrito ya se encuentra en una orden.");
         }
-
 
         Double total = 0.0;
         for (CartProduct item : cart.getItems()) {

@@ -1,6 +1,7 @@
 package com.example.HPPO_Backend.controllers.ecom;
 
 import com.example.HPPO_Backend.entity.Order;
+import com.example.HPPO_Backend.entity.User;
 import com.example.HPPO_Backend.entity.dto.OrderRequest;
 import com.example.HPPO_Backend.service.OrderService;
 
@@ -9,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -36,8 +38,10 @@ public class OrdersController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createOrder(@RequestBody OrderRequest orderRequest) {
-        Order result = this.orderService.createOrder(orderRequest);
+    public ResponseEntity<Object> createOrder(
+            @RequestBody OrderRequest orderRequest,
+            @AuthenticationPrincipal User user) {
+        Order result = this.orderService.createOrder(orderRequest, user);
         return ResponseEntity.created(URI.create("/orders/" + result.getId())).body(result);
     }
     @PatchMapping("/{orderId}/cancel")
