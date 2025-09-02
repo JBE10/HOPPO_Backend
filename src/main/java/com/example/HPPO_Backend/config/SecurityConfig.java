@@ -46,7 +46,7 @@ public class SecurityConfig {
 
 
 
-                                .requestMatchers(HttpMethod.GET,  "/orders/**").hasAnyRole("COMPRADOR", "VENDEDOR", "ADMIN")
+                                .requestMatchers(HttpMethod.GET,  "/orders/**").hasAnyRole("COMPRADOR", "VENDEDOR")
 
 
                                 .anyRequest().authenticated()
