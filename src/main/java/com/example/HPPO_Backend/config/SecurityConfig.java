@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -30,19 +30,25 @@ public class SecurityConfig {
                         .csrf(AbstractHttpConfigurer::disable)
                         .sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
                         .authorizeHttpRequests(auth -> auth
+
                                 .requestMatchers("/api/v1/auth/**", "/error/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/brands/**").permitAll()
-                                .requestMatchers(HttpMethod.POST,   "/products/**", "/categories/**", "/brands/**")
-                                .hasRole("VENDEDOR")
-                                .requestMatchers(HttpMethod.PUT,    "/products/**", "/categories/**", "/brands/**")
-                                .hasRole("VENDEDOR")
-                                .requestMatchers(HttpMethod.DELETE, "/products/**", "/categories/**", "/brands/**")
-                                .hasRole("VENDEDOR")
+
+
+                                .requestMatchers(HttpMethod.POST,   "/products/**", "/categories/**", "/brands/**").hasRole("VENDEDOR")
+                                .requestMatchers(HttpMethod.PUT,    "/products/**", "/categories/**", "/brands/**").hasRole("VENDEDOR")
+                                .requestMatchers(HttpMethod.DELETE, "/products/**", "/categories/**", "/brands/**").hasRole("VENDEDOR")
+
+
                                 .requestMatchers(HttpMethod.POST, "/orders/**").hasRole("COMPRADOR")
-                                .requestMatchers(HttpMethod.GET,  "/orders/**")
-                                .hasAnyRole("COMPRADOR", "VENDEDOR")
-                                .requestMatchers("/carts/**", "/cart-products/**")
-                                .hasAnyRole("COMPRADOR", "VENDEDOR")
+                                .requestMatchers("/carts/**", "/cart-products/**").hasRole("COMPRADOR")
+
+
+
+
+                                .requestMatchers(HttpMethod.GET,  "/orders/**").hasAnyRole("COMPRADOR", "VENDEDOR", "ADMIN")
+
+
                                 .anyRequest().authenticated()
                         )
                         .authenticationProvider(authenticationProvider)
