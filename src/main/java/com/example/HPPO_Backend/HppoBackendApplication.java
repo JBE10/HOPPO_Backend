@@ -21,13 +21,13 @@ public class HppoBackendApplication {
 	public CommandLineRunner createInitialUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
 
-			if (userRepository.findByEmail("vendedor.prueba@tienda.com").isEmpty()) {
+			if (userRepository.findByEmail("jespino@uade.edu.ar").isEmpty()) {
 				User vendedor = User.builder()
 						.name("Vendedor")
 						.lastName("Test")
-						.email("vendedor.prueba@tienda.com")
-						.username("vendedor.prueba@tienda.com")
-						.password(passwordEncoder.encode("vendedor123"))
+						.email("jespino@uade.edu.ar")
+						.username("jespino@uade.edu.ar")
+						.password(passwordEncoder.encode("pass123"))
 						.role(Role.VENDEDOR)
 						.build();
 				userRepository.save(vendedor);
