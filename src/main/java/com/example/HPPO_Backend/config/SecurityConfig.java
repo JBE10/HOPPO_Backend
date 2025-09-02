@@ -2,6 +2,7 @@ package com.example.HPPO_Backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,8 +17,8 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
-@EnableMethodSecurity
 public class SecurityConfig {
 
         private final JwtAuthenticationFilter jwtAuthFilter;
@@ -26,14 +27,26 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
-                                .csrf(AbstractHttpConfigurer::disable)
-                                .authorizeHttpRequests(req -> req.requestMatchers("/api/v1/auth/**")
-                                                .permitAll()
-                                                .anyRequest()
-                                                .authenticated())
-                                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                                .authenticationProvider(authenticationProvider)
-                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                        .csrf(AbstractHttpConfigurer::disable)
+                        .sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
+                        .authorizeHttpRequests(auth -> auth
+                                .requestMatchers("/api/v1/auth/**", "/error/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/brands/**").permitAll()
+                                .requestMatchers(HttpMethod.POST,   "/products/**", "/categories/**", "/brands/**")
+                                .hasRole("VENDEDOR")
+                                .requestMatchers(HttpMethod.PUT,    "/products/**", "/categories/**", "/brands/**")
+                                .hasRole("VENDEDOR")
+                                .requestMatchers(HttpMethod.DELETE, "/products/**", "/categories/**", "/brands/**")
+                                .hasRole("VENDEDOR")
+                                .requestMatchers(HttpMethod.POST, "/orders/**").hasRole("COMPRADOR")
+                                .requestMatchers(HttpMethod.GET,  "/orders/**")
+                                .hasAnyRole("COMPRADOR", "VENDEDOR")
+                                .requestMatchers("/carts/**", "/cart-products/**")
+                                .hasAnyRole("COMPRADOR", "VENDEDOR")
+                                .anyRequest().authenticated()
+                        )
+                        .authenticationProvider(authenticationProvider)
+                        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
         }

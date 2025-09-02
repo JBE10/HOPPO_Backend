@@ -33,4 +33,5 @@ public class BrandsController {
         Brand result = this.brandService.createBrand(brandRequest);
         return ResponseEntity.created(URI.create("/brands/" + result.getId())).body(result);
     }
+
 }
