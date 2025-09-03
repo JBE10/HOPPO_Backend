@@ -25,6 +25,9 @@ public class Product {
     @Column(nullable = false)
     private Integer stock;
 
+    @Column
+    private Integer discount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
     @JsonIgnore

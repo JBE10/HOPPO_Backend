@@ -61,6 +61,7 @@ public class ProductServiceImpl implements ProductService {
         product.setStock(productRequest.getStock());
         product.setBrand(brand);
         product.setCategory(category);
+        product.setDiscount(productRequest.getDiscount());
 
 
 
@@ -95,6 +96,7 @@ public class ProductServiceImpl implements ProductService {
         product.setStock(productRequest.getStock());
         product.setBrand(brand);
         product.setCategory(category);
+        product.setDiscount(productRequest.getDiscount());
 
 
         if (product.getImages() != null) {

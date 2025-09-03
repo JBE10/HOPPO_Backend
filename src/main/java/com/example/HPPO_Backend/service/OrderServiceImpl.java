@@ -58,7 +58,17 @@ public class OrderServiceImpl implements OrderService {
 
         Double total = 0.0;
         for (CartProduct item : cart.getItems()) {
-            total += item.getProduct().getPrice() * item.getQuantity();
+            Product product = item.getProduct();
+            Double priceToUse = product.getPrice();
+
+
+            if (product.getDiscount() != null && product.getDiscount() > 0 && product.getDiscount() < 100) {
+
+                double discountMultiplier = 1 - (product.getDiscount() / 100.0);
+                priceToUse = product.getPrice() * discountMultiplier;
+            }
+
+            total += priceToUse * item.getQuantity();
         }
 
         Order newOrder = new Order();
