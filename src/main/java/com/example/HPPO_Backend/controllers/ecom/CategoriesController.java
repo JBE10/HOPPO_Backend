@@ -42,6 +42,11 @@ public class CategoriesController {
         Category result = this.categoryService.createCategory( categoryRequest.getDescription());
         return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(result);
     }
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) throws Exception {
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }

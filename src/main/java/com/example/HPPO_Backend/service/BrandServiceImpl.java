@@ -5,7 +5,9 @@ import com.example.HPPO_Backend.entity.dto.BrandRequest;
 import com.example.HPPO_Backend.exceptions.BrandDuplicateException;
 import com.example.HPPO_Backend.repository.BrandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,5 +33,12 @@ public class BrandServiceImpl implements BrandService {
             return brandRepository.save(brand);
         }
         throw new BrandDuplicateException();
+    }
+    @Override
+    public void deleteBrand(Long brandId) {
+        if (!brandRepository.existsById(brandId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marca no encontrada con id: " + brandId);
+        }
+        brandRepository.deleteById(brandId);
     }
 }

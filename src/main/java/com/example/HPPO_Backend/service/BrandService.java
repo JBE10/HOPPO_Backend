@@ -11,4 +11,5 @@ public interface BrandService {
     List<Brand> getBrands();
     Optional<Brand> getBrandById(Long brandId);
     Brand createBrand(BrandRequest brandRequest) throws BrandDuplicateException;
+    void deleteBrand(Long brandId);
 }

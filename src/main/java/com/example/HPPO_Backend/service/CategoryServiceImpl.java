@@ -5,9 +5,11 @@ import com.example.HPPO_Backend.exceptions.CategoryDuplicateException;
 import com.example.HPPO_Backend.repository.CategoryRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,5 +33,12 @@ public  class CategoryServiceImpl implements CategoryService {
         return categoryRepository.save(new Category(description));
         }
         throw new CategoryDuplicateException();
+    }
+    public void deleteCategory(Long categoryId) throws Exception {
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoría no encontrada con id: " + categoryId);
+        }
+        categoryRepository.deleteById(categoryId);
+
     }
 }

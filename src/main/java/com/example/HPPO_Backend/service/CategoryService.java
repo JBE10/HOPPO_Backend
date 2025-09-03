@@ -8,7 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 public interface CategoryService {
-    public Page<Category> getCategories(PageRequest pageRequest);
-    public Optional<Category> getCategoryById(Long categoryId);
-    public Category createCategory( String description) throws Exception;
+     Page<Category> getCategories(PageRequest pageRequest);
+     Optional<Category> getCategoryById(Long categoryId);
+     Category createCategory( String description) throws Exception;
+     void deleteCategory(Long categoryId) throws Exception;
 }

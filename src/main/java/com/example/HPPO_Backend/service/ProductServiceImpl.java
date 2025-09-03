@@ -113,11 +113,27 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(product);
     }
 
+
+
+
     @Override
     public void deleteProduct(Long productId) {
         if (!productRepository.existsById(productId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productId);
         }
         productRepository.deleteById(productId);
+    }
+    @Override
+    public Page<Product> getProductsByCategory(Long categoryId, PageRequest pageRequest) {
+        return productRepository.getProductByCategory(categoryId, pageRequest);
+    }
+
+    @Override
+    public Page<Product> getProductsByBrand(Long brandId, PageRequest pageRequest) {
+        return productRepository.getProductsByBrand(brandId, pageRequest);
+    }
+    @Override
+    public Page<Product> searchAndFilterProducts(String name, Double minPrice, Double maxPrice, PageRequest pageRequest) {
+        return productRepository.searchAndFilterProducts(name, minPrice, maxPrice, pageRequest);
     }
 }

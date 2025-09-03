@@ -34,4 +34,9 @@ public class BrandsController {
         return ResponseEntity.created(URI.create("/brands/" + result.getId())).body(result);
     }
 
+    @DeleteMapping("/{brandId}")
+    public ResponseEntity<Void> deleteBrand(@PathVariable Long brandId){
+        this.brandService.deleteBrand(brandId);
+        return ResponseEntity.noContent().build();
+    }
 }

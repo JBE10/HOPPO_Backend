@@ -10,10 +10,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 public interface ProductService {
-    public Page<Product> getProducts(PageRequest pageRequest);
+    Page<Product> getProducts(PageRequest pageRequest);
     Optional<Product> getProductById(Long productId);
     Product createProduct(ProductRequest productRequest) throws ProductDuplicateException;
 
     void deleteProduct(Long productId);
     Product updateProduct(Long productId, ProductRequest productRequest);
+    Page<Product> getProductsByCategory(Long categoryId, PageRequest pageRequest);
+    Page<Product> getProductsByBrand(Long brandId, PageRequest pageRequest);;
+    Page<Product> searchAndFilterProducts(String name, Double minPrice, Double maxPrice, PageRequest pageRequest);
 }

@@ -18,14 +18,20 @@ import java.net.URI;
 public class ProductsController {
     @Autowired
     private ProductService productService;
- 
-    @GetMapping
-    public ResponseEntity<Page<Product>> getProdcucts(
+
+    @GetMapping("/products")
+    public ResponseEntity<Page<Product>> getProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-        if (page == null || size == null)
-            return ResponseEntity.ok(productService.getProducts(PageRequest.of(0, Integer.MAX_VALUE)));
-        return ResponseEntity.ok(productService.getProducts(PageRequest.of(page, size)));
+
+        PageRequest pageRequest = (page != null && size != null)
+                ? PageRequest.of(page, size)
+                : PageRequest.of(0, Integer.MAX_VALUE);
+
+        return ResponseEntity.ok(productService.searchAndFilterProducts(name, minPrice, maxPrice, pageRequest));
     }
  
     @GetMapping({"/{productId}"})
@@ -50,5 +56,29 @@ public class ProductsController {
         productService.deleteProduct(productId);
         return ResponseEntity.noContent().build();
     }
-   
+    @GetMapping("/categories/{categoryId}/products")
+    public ResponseEntity<Page<Product>> getProductsByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
+        PageRequest pageRequest = (page != null && size != null)
+                ? PageRequest.of(page, size)
+                : PageRequest.of(0, Integer.MAX_VALUE);
+
+        return ResponseEntity.ok(productService.getProductsByCategory(categoryId, pageRequest));
+    }
+
+    @GetMapping("/brands/{brandId}/products")
+    public ResponseEntity<Page<Product>> getProductsByBrand(
+            @PathVariable Long brandId,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
+        PageRequest pageRequest = (page != null && size != null)
+                ? PageRequest.of(page, size)
+                : PageRequest.of(0, Integer.MAX_VALUE);
+
+        return ResponseEntity.ok(productService.getProductsByBrand(brandId, pageRequest));
+    }
 }
