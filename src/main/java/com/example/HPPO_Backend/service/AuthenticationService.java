@@ -1,6 +1,9 @@
 package com.example.HPPO_Backend.service;
 
+import com.example.HPPO_Backend.entity.Cart;
 import com.example.HPPO_Backend.entity.Role;
+import com.example.HPPO_Backend.repository.CartRepository;
+import com.example.HPPO_Backend.repository.CategoryRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +17,7 @@ import com.example.HPPO_Backend.entity.User;
 import com.example.HPPO_Backend.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +26,9 @@ public class AuthenticationService {
         private final PasswordEncoder passwordEncoder;
         private final JwtService jwtService;
         private final AuthenticationManager authenticationManager;
+        private final CartRepository cartRepository;
 
+        @Transactional
         public AuthenticationResponse register(RegisterRequest request) {
                 User user = new User();
                 user.setUsername(request.getEmail());
@@ -32,11 +38,19 @@ public class AuthenticationService {
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
                 user.setRole(Role.COMPRADOR);
 
-                repository.save(user);
-                var jwtToken = jwtService.generateToken(user);
+                User savedUser = repository.save(user);
+
+
+                Cart newUserCart = new Cart();
+                newUserCart.setUser(savedUser);
+                newUserCart.setQuantity(0);
+                cartRepository.save(newUserCart);
+
+
+                var jwtToken = jwtService.generateToken(savedUser);
                 return AuthenticationResponse.builder()
-                                .accessToken(jwtToken)
-                                .build();
+                        .accessToken(jwtToken)
+                        .build();
         }
 
         public AuthenticationResponse authenticate(AuthenticationRequest request) {

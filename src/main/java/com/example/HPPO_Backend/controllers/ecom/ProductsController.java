@@ -19,7 +19,7 @@ public class ProductsController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/products")
+    @GetMapping
     public ResponseEntity<Page<Product>> getProducts(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Double minPrice,

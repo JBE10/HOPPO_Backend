@@ -1,6 +1,7 @@
 package com.example.HPPO_Backend.service;
 
 import com.example.HPPO_Backend.entity.Category;
+import com.example.HPPO_Backend.entity.dto.CategoryRequest;
 import com.example.HPPO_Backend.exceptions.CategoryDuplicateException;
 import com.example.HPPO_Backend.repository.CategoryRepository;
 
@@ -41,4 +42,15 @@ public  class CategoryServiceImpl implements CategoryService {
         categoryRepository.deleteById(categoryId);
 
     }
+
+
+    @Override
+    public Category updateCategory(Long categoryId, CategoryRequest categoryRequest) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoría no encontrada con id: " + categoryId));
+        category.setDescription(categoryRequest.getDescription());
+        return categoryRepository.save(category);
+    }
+
+
 }
