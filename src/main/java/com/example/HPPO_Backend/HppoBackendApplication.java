@@ -20,19 +20,6 @@ public class HppoBackendApplication {
 	@Bean
 	public CommandLineRunner createInitialUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
-
-			if (userRepository.findByEmail("jespino@uade.edu.ar").isEmpty()) {
-				User vendedor = User.builder()
-						.name("Vendedor")
-						.lastName("Test")
-						.email("jespino@uade.edu.ar")
-						.username("jespino@uade.edu.ar")
-						.password(passwordEncoder.encode("pass123"))
-						.role(Role.VENDEDOR)
-						.build();
-				userRepository.save(vendedor);
-
-			}
 		};
 	}
 }

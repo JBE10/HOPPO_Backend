@@ -4,6 +4,7 @@ import com.example.HPPO_Backend.entity.Cart;
 import com.example.HPPO_Backend.entity.Role;
 import com.example.HPPO_Backend.repository.CartRepository;
 import com.example.HPPO_Backend.repository.CategoryRepository;
+import com.example.HPPO_Backend.entity.Role;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,12 +32,19 @@ public class AuthenticationService {
         @Transactional
         public AuthenticationResponse register(RegisterRequest request) {
                 User user = new User();
+
+                var userSeller = repository.findByRole(Role.VENDEDOR);
+                if (userSeller.isPresent()) {
+                  user.setRole(Role.COMPRADOR);
+                } else {
+                  user.setRole(Role.VENDEDOR);
+                }
+
                 user.setUsername(request.getEmail());
                 user.setName(request.getFirstname());
                 user.setLastName(request.getLastname());
                 user.setEmail(request.getEmail());
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
-                user.setRole(Role.COMPRADOR);
 
                 User savedUser = repository.save(user);
 
