@@ -41,13 +41,11 @@ public class SecurityConfig {
 
 
                                 .requestMatchers(HttpMethod.POST, "/orders/**").hasRole("COMPRADOR")
+                                .requestMatchers(HttpMethod.GET, "/carts/**").hasRole("COMPRADOR")
                                 .requestMatchers("/carts/**", "/cart-products/**").hasRole("COMPRADOR")
 
 
-
-
                                 .requestMatchers(HttpMethod.GET,  "/orders/**").hasAnyRole("COMPRADOR", "VENDEDOR")
-
 
                                 .anyRequest().authenticated()
                         )

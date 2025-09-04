@@ -49,4 +49,5 @@ public class OrdersController {
         Order cancelledOrder = this.orderService.cancelOrder(orderId);
         return ResponseEntity.ok(cancelledOrder);
     }
+
 }

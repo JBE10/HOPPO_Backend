@@ -30,8 +30,7 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus status; // <-- NUEVO CAMPO
-
+    private OrderStatus status;
 
     @PrePersist
     public void prePersist() {
