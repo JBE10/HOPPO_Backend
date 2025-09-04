@@ -136,4 +136,13 @@ public class ProductServiceImpl implements ProductService {
     public Page<Product> searchAndFilterProducts(String name, Double minPrice, Double maxPrice, PageRequest pageRequest) {
         return productRepository.searchAndFilterProducts(name, minPrice, maxPrice, pageRequest);
     }
+    
+    @Override
+    public Page<Product> getAvailableProductsByCategory(Long categoryId, PageRequest pageRequest) {
+        return productRepository.getAvailableProductsByCategory(categoryId, pageRequest);
+    }
+    @Override
+    public Page<Product> getAvailableProductsByBrand(Long brandId, PageRequest pageRequest) {
+        return productRepository.getAvailableProductsByBrand(brandId, pageRequest);
+    }
 }

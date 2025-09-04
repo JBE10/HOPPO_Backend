@@ -18,11 +18,20 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
 
     Page<Product> getProductsByBrand(Long brandId, Pageable pageable);
+    
+    
+    @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId AND p.stock > 0")
+    Page<Product> getAvailableProductsByCategory(@Param("categoryId") Long categoryId, Pageable pageable);
+    
+    @Query("SELECT p FROM Product p WHERE p.brand.id = :brandId AND p.stock > 0")
+    Page<Product> getAvailableProductsByBrand(@Param("brandId") Long brandId, Pageable pageable);
+    
+    Page<Product> getProductByCategory(Long categoryId, PageRequest pageRequest);
 
-
+    
 
     Page<Product> getProductByCategory(Long categoryId, PageRequest pageRequest);
-    @Query("SELECT p FROM Product p WHERE " +
+    @Query("SELECT p FROM Product p WHERE p.stock > 0 AND " +
             "(:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
             "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
             "(:maxPrice IS NULL OR p.price <= :maxPrice)")
