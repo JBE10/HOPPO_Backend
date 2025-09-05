@@ -44,8 +44,8 @@ public class CartsController {
 
     @GetMapping({"/{cartId}"})
     public ResponseEntity<Cart> getCartById(@PathVariable Long cartId) {
-
         Optional<Cart> result = this.cartService.getCartById(cartId);
         return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
+
 }
