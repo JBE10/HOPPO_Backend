@@ -31,21 +31,22 @@ public class SecurityConfig {
                         .sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
                         .authorizeHttpRequests(auth -> auth
 
+
                                 .requestMatchers("/api/v1/auth/**", "/error/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/brands/**").permitAll()
 
 
-                                .requestMatchers(HttpMethod.POST,   "/products/**", "/categories/**", "/brands/**").hasRole("VENDEDOR")
-                                .requestMatchers(HttpMethod.PUT,    "/products/**", "/categories/**", "/brands/**").hasRole("VENDEDOR")
-                                .requestMatchers(HttpMethod.DELETE, "/products/**", "/categories/**", "/brands/**").hasRole("VENDEDOR")
+                                .requestMatchers(HttpMethod.POST,   "/products/**", "/categories/**", "/brands/**").hasAuthority("ROLE_VENDEDOR")
+                                .requestMatchers(HttpMethod.PUT,    "/products/**", "/categories/**", "/brands/**").hasAuthority("ROLE_VENDEDOR")
+                                .requestMatchers(HttpMethod.DELETE, "/products/**", "/categories/**", "/brands/**").hasAuthority("ROLE_VENDEDOR")
 
 
-                                .requestMatchers(HttpMethod.POST, "/orders/**").hasRole("COMPRADOR")
-                                .requestMatchers(HttpMethod.GET, "/carts/**").hasRole("COMPRADOR")
-                                .requestMatchers("/carts/**", "/cart-products/**").hasRole("COMPRADOR")
+                                .requestMatchers("/carts/**", "/cart-products/**").hasAuthority("ROLE_COMPRADOR")
+                                .requestMatchers(HttpMethod.POST, "/orders/**").hasAuthority("ROLE_COMPRADOR")
 
 
-                                .requestMatchers(HttpMethod.GET,  "/orders/**").hasAnyRole("COMPRADOR", "VENDEDOR")
+                                .requestMatchers(HttpMethod.GET,  "/orders/**").hasAnyAuthority("ROLE_COMPRADOR", "ROLE_VENDEDOR")
+
 
                                 .anyRequest().authenticated()
                         )

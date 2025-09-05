@@ -9,5 +9,6 @@ import java.util.Optional;
 public interface CartService {
     Page<Cart> getCarts(PageRequest pageRequest);
     Optional<Cart> getCartById(Long cartId);
+    Optional<Cart> getCartByUserId(Long userId);
     Cart createCart(CartRequest cartRequest);
 }
