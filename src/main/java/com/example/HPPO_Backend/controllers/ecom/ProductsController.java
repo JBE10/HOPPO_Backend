@@ -66,7 +66,7 @@ public class ProductsController {
                 ? PageRequest.of(page, size)
                 : PageRequest.of(0, Integer.MAX_VALUE);
 
-        return ResponseEntity.ok(productService.getProductsByCategory(categoryId, pageRequest));
+        return ResponseEntity.ok(productService.getAvailableProductsByCategory(categoryId, pageRequest));
     }
 
     @GetMapping("/brands/{brandId}/products")
@@ -79,6 +79,6 @@ public class ProductsController {
                 ? PageRequest.of(page, size)
                 : PageRequest.of(0, Integer.MAX_VALUE);
 
-        return ResponseEntity.ok(productService.getProductsByBrand(brandId, pageRequest));
+        return ResponseEntity.ok(productService.getAvailableProductsByBrand(brandId, pageRequest));
     }
 }
