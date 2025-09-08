@@ -26,8 +26,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.brand.id = :brandId AND p.stock > 0")
     Page<Product> getAvailableProductsByBrand(@Param("brandId") Long brandId, Pageable pageable);
     
-    Page<Product> getProductByCategory(Long categoryId, PageRequest pageRequest);
-
     
 
     Page<Product> getProductByCategory(Long categoryId, PageRequest pageRequest);
