@@ -33,26 +33,24 @@ public class AuthenticationService {
         public AuthenticationResponse register(RegisterRequest request) {
                 User user = new User();
 
-                var userSeller = repository.findByRole(Role.VENDEDOR);
-                if (userSeller.isPresent()) {
-                        user.setRole(Role.COMPRADOR);
-                } else {
-                        user.setRole(Role.VENDEDOR);
-                }
+                // Usar el role que viene en el request
+                user.setRole(request.getRole() != null ? request.getRole() : Role.COMPRADOR);
 
                 user.setUsername(request.getEmail());
                 user.setName(request.getFirstname());
                 user.setLastName(request.getLastname());
                 user.setEmail(request.getEmail());
-
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
 
                 User savedUser = repository.save(user);
 
-                Cart newUserCart = new Cart();
-                newUserCart.setUser(savedUser);
-                newUserCart.setQuantity(0);
-                cartRepository.save(newUserCart);
+
+                if (savedUser.getRole() == Role.COMPRADOR) {
+                        Cart newUserCart = new Cart();
+                        newUserCart.setUser(savedUser);
+                        newUserCart.setQuantity(0);
+                        cartRepository.save(newUserCart);
+                }
 
                 var jwtToken = jwtService.generateToken(savedUser);
                 return AuthenticationResponse.builder()

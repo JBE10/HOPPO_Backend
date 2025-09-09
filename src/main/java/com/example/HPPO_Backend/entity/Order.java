@@ -19,14 +19,14 @@ public class Order {
     @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
 
-    @OneToOne
+    // USAR @ManyToOne SIN bidireccional - permite múltiples órdenes por carrito
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -37,6 +37,5 @@ public class Order {
         if (status == null) {
             status = OrderStatus.CREATED;
         }
-
     }
 }

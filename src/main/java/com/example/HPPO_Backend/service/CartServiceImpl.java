@@ -37,23 +37,18 @@ public class CartServiceImpl implements CartService {
         if (cartRequest.getUserId() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId es obligatorio");
 
-
         Optional<Cart> existing = cartRepository.findByUserId(cartRequest.getUserId());
         if (existing.isPresent()) {
+            // REMOVER LA VERIFICACIÓN DE ORDER porque ya no existe esa referencia
+            // if (existing.get().getOrder() != null) {
+            //     ...
+            // }
 
-            if (existing.get().getOrder() != null) {
-                User user = userRepository.findById(cartRequest.getUserId())
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: id=" + cartRequest.getUserId()));
-
-                Cart newCart = new Cart();
-                newCart.setQuantity(0);
-                newCart.setUser(user);
-                return cartRepository.save(newCart);
-            } else {
-                return existing.get();
-            }
+            // Simplemente retornar el carrito existente
+            return existing.get();
         }
 
+        // Si no existe carrito, crear uno nuevo
         User user = userRepository.findById(cartRequest.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: id=" + cartRequest.getUserId()));
 
@@ -67,5 +62,4 @@ public class CartServiceImpl implements CartService {
     public Optional<Cart> getCartByUserId(Long userId) {
         return cartRepository.findByUserId(userId);
     }
-
 }
