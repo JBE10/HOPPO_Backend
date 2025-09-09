@@ -40,7 +40,7 @@ public class CartServiceImpl implements CartService {
 
         Optional<Cart> existing = cartRepository.findByUserId(cartRequest.getUserId());
         if (existing.isPresent()) {
-            // 🟢 NUEVA LÓGICA: Si el carrito existente ya tiene una orden, crear uno nuevo.
+
             if (existing.get().getOrder() != null) {
                 User user = userRepository.findById(cartRequest.getUserId())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: id=" + cartRequest.getUserId()));
@@ -50,7 +50,7 @@ public class CartServiceImpl implements CartService {
                 newCart.setUser(user);
                 return cartRepository.save(newCart);
             } else {
-                return existing.get(); // Reutilizar el carrito existente si no tiene una orden.
+                return existing.get();
             }
         }
 
