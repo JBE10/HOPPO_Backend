@@ -35,9 +35,9 @@ public class AuthenticationService {
 
                 var userSeller = repository.findByRole(Role.VENDEDOR);
                 if (userSeller.isPresent()) {
-                  user.setRole(Role.COMPRADOR);
+                        user.setRole(Role.COMPRADOR);
                 } else {
-                  user.setRole(Role.VENDEDOR);
+                        user.setRole(Role.VENDEDOR);
                 }
 
                 user.setUsername(request.getEmail());
@@ -49,12 +49,10 @@ public class AuthenticationService {
 
                 User savedUser = repository.save(user);
 
-
                 Cart newUserCart = new Cart();
                 newUserCart.setUser(savedUser);
                 newUserCart.setQuantity(0);
                 cartRepository.save(newUserCart);
-
 
                 var jwtToken = jwtService.generateToken(savedUser);
                 return AuthenticationResponse.builder()
