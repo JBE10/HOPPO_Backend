@@ -1,10 +1,10 @@
 package com.example.HPPO_Backend.service;
 
 import com.example.HPPO_Backend.entity.Cart;
-import com.example.HPPO_Backend.entity.User;                 // <-- entidad correcta
+import com.example.HPPO_Backend.entity.User;
 import com.example.HPPO_Backend.entity.dto.CartRequest;
 import com.example.HPPO_Backend.repository.CartRepository;
-import com.example.HPPO_Backend.repository.UserRepository;   // <-- repo de User
+import com.example.HPPO_Backend.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -40,8 +40,18 @@ public class CartServiceImpl implements CartService {
 
         Optional<Cart> existing = cartRepository.findByUserId(cartRequest.getUserId());
         if (existing.isPresent()) {
-            return existing.get(); // idempotente: devolvés el existente
-            // alternativo: throw new ResponseStatusException(HttpStatus.CONFLICT, "El usuario ya tiene carrito");
+            // 🟢 NUEVA LÓGICA: Si el carrito existente ya tiene una orden, crear uno nuevo.
+            if (existing.get().getOrder() != null) {
+                User user = userRepository.findById(cartRequest.getUserId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: id=" + cartRequest.getUserId()));
+
+                Cart newCart = new Cart();
+                newCart.setQuantity(0);
+                newCart.setUser(user);
+                return cartRepository.save(newCart);
+            } else {
+                return existing.get(); // Reutilizar el carrito existente si no tiene una orden.
+            }
         }
 
         User user = userRepository.findById(cartRequest.getUserId())
