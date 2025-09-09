@@ -3,6 +3,7 @@ package com.example.HPPO_Backend.service;
 import com.example.HPPO_Backend.entity.Cart;
 import com.example.HPPO_Backend.entity.CartProduct;
 import com.example.HPPO_Backend.entity.Product;
+import com.example.HPPO_Backend.entity.User;
 import com.example.HPPO_Backend.entity.dto.CartProductRequest;
 import com.example.HPPO_Backend.repository.CartProductRepository;
 import com.example.HPPO_Backend.repository.CartRepository;
@@ -10,7 +11,7 @@ import com.example.HPPO_Backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // <-- ¡Importante!
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -34,12 +35,12 @@ public class CartProductServiceImpl implements CartProductService {
     }
 
     @Transactional
-    public CartProduct createCartProduct(CartProductRequest request) {
+    public CartProduct createCartProduct(CartProductRequest request, User user) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
 
-        Cart cart = cartRepository.findById(request.getCartId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado"));
+        Cart cart = cartRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado para el usuario"));
 
         if (product.getStock() < request.getQuantity()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "No hay suficiente stock para el producto: " + product.getName());
@@ -53,23 +54,30 @@ public class CartProductServiceImpl implements CartProductService {
         cp.setProduct(product);
         cp.setCart(cart);
 
-        return cartProductRepository.save(cp);
+        CartProduct savedCartProduct = cartProductRepository.save(cp);
+
+
+        cart.getItems().add(savedCartProduct);
+
+        cart.setQuantity(cart.getQuantity() + savedCartProduct.getQuantity());
+
+
+        cartRepository.save(cart);
+
+        return savedCartProduct;
     }
+
     @Override
     @Transactional
     public void deleteCartProduct(Long id) {
-
         CartProduct cartProduct = cartProductRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item del carrito no encontrado"));
-
 
         Product product = cartProduct.getProduct();
         int quantityToReturn = cartProduct.getQuantity();
 
-
         product.setStock(product.getStock() + quantityToReturn);
         productRepository.save(product);
-
 
         cartProductRepository.delete(cartProduct);
     }

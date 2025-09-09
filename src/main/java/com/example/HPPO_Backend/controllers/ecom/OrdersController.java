@@ -24,11 +24,11 @@ public class OrdersController {
 
     @GetMapping
     public ResponseEntity<Page<Order>> getOrders(
-        @RequestParam(required = false) Integer page,
-        @RequestParam(required = false) Integer size){
-            if (page == null || size == null) 
-                return ResponseEntity.ok(orderService.getOrders(PageRequest.of(0, Integer.MAX_VALUE)));
-            return ResponseEntity.ok(orderService.getOrders(PageRequest.of(page, size)));
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size){
+        if (page == null || size == null)
+            return ResponseEntity.ok(orderService.getOrders(PageRequest.of(0, Integer.MAX_VALUE)));
+        return ResponseEntity.ok(orderService.getOrders(PageRequest.of(page, size)));
     }
 
     @GetMapping({"/{orderId}"})
@@ -40,8 +40,8 @@ public class OrdersController {
     @PostMapping
     public ResponseEntity<Object> createOrder(
             @RequestBody OrderRequest orderRequest,
-            @AuthenticationPrincipal User user) {
-        Order result = this.orderService.createOrder(orderRequest, user);
+            @AuthenticationPrincipal User user) { // Aquí se inyecta el usuario autenticado
+        Order result = this.orderService.createOrder(orderRequest, user); // Se pasa el usuario al servicio
         return ResponseEntity.created(URI.create("/orders/" + result.getId())).body(result);
     }
     @PatchMapping("/{orderId}/cancel")

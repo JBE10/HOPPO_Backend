@@ -31,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
     }
+
     public Page<Order> getOrders(PageRequest pageable) {
         return orderRepository.findAll(pageable);
     }
@@ -43,16 +44,11 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order createOrder(OrderRequest orderRequest, User user) {
 
+        // Obtener el carrito directamente del usuario autenticado
+        Cart cart = cartRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado para el usuario"));
 
-        Cart cart = cartRepository.findById(orderRequest.getCartId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado"));
-
-
-        if (!cart.getUser().getId().equals(user.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para usar este carrito.");
-        }
-
-        if(orderRepository.findByCartId(orderRequest.getCartId()).isPresent()){
+        if(orderRepository.findByCartId(cart.getId()).isPresent()){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El carrito ya se encuentra en una orden.");
         }
 
@@ -63,7 +59,6 @@ public class OrderServiceImpl implements OrderService {
 
 
             if (product.getDiscount() != null && product.getDiscount() > 0 && product.getDiscount() < 100) {
-
                 double discountMultiplier = 1 - (product.getDiscount() / 100.0);
                 priceToUse = product.getPrice() * discountMultiplier;
             }
@@ -93,7 +88,6 @@ public class OrderServiceImpl implements OrderService {
         for (CartProduct item : order.getCart().getItems()) {
             Product product = item.getProduct();
             product.setStock(product.getStock() + item.getQuantity());
-
         }
         order.setStatus(OrderStatus.CANCELLED);
         return orderRepository.save(order);

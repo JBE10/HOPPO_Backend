@@ -1,5 +1,6 @@
 package com.example.HPPO_Backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,6 +17,7 @@ public class CartProduct {
 
     @ManyToOne
     @JoinColumn(name = "id_cart")
+    @JsonIgnore
     private Cart cart;
 
     @ManyToOne

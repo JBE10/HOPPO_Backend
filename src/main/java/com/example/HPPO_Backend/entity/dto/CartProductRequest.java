@@ -6,5 +6,5 @@ import lombok.Data;
 public class CartProductRequest {
     private Integer quantity;
     private Long productId;
-    private Long cartId;
+
 }

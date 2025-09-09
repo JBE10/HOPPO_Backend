@@ -1,10 +1,12 @@
 package com.example.HPPO_Backend.controllers.ecom;
 
 import com.example.HPPO_Backend.entity.CartProduct;
+import com.example.HPPO_Backend.entity.User;
 import com.example.HPPO_Backend.entity.dto.CartProductRequest;
 import com.example.HPPO_Backend.service.CartProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal; // ¡Importar!
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -29,8 +31,8 @@ public class CartProductsController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createCartProduct(@RequestBody CartProductRequest request) {
-        CartProduct result = this.cartProductService.createCartProduct(request);
+    public ResponseEntity<Object> createCartProduct(@RequestBody CartProductRequest request, @AuthenticationPrincipal User user) {
+        CartProduct result = this.cartProductService.createCartProduct(request, user); // Pasar el objeto user
         return ResponseEntity.created(URI.create("/cart-products/" + result.getId())).body(result);
     }
     @DeleteMapping("/{id}")

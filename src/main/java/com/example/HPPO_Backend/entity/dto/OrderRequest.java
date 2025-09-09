@@ -9,6 +9,6 @@ public class OrderRequest {
     private Date date;
     private String address;
     private String shipping;
-    private Long cartId;
+
 
 }
