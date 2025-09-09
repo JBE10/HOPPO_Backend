@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
 
+
+
 @Entity
 @Data
 public class Cart {
@@ -21,6 +23,6 @@ public class Cart {
     @JsonIgnore
     private Order order;
 
-    @OneToMany
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartProduct> items;
 }

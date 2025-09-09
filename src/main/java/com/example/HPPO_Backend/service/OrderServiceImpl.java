@@ -44,11 +44,10 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order createOrder(OrderRequest orderRequest, User user) {
 
-        // Obtener el carrito directamente del usuario autenticado
         Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado para el usuario"));
 
-        if(orderRepository.findByCartId(cart.getId()).isPresent()){
+        if (orderRepository.findByCartId(cart.getId()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El carrito ya se encuentra en una orden.");
         }
 
@@ -56,13 +55,10 @@ public class OrderServiceImpl implements OrderService {
         for (CartProduct item : cart.getItems()) {
             Product product = item.getProduct();
             Double priceToUse = product.getPrice();
-
-
             if (product.getDiscount() != null && product.getDiscount() > 0 && product.getDiscount() < 100) {
                 double discountMultiplier = 1 - (product.getDiscount() / 100.0);
                 priceToUse = product.getPrice() * discountMultiplier;
             }
-
             total += priceToUse * item.getQuantity();
         }
 
@@ -74,7 +70,14 @@ public class OrderServiceImpl implements OrderService {
         newOrder.setUser(user);
         newOrder.setCart(cart);
 
-        return orderRepository.save(newOrder);
+        Order savedOrder = orderRepository.save(newOrder);
+
+        // LÓGICA CORREGIDA: Vaciar el carrito existente
+        cart.getItems().clear();
+        cart.setQuantity(0);
+        cartRepository.save(cart);
+
+        return savedOrder;
     }
     @Override
     @Transactional
