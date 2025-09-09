@@ -36,7 +36,6 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/brands/**").permitAll()
 
-
                                 .requestMatchers(HttpMethod.POST,   "/products/**").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.PUT,    "/products/**").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole("VENDEDOR")
@@ -45,6 +44,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST,   "/categories/**").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.PUT,    "/categories/**").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.DELETE, "/categories/**").hasRole("VENDEDOR")
+
 
                                 .requestMatchers(HttpMethod.POST,   "/brands/**").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.DELETE, "/brands/**").hasRole("VENDEDOR")
@@ -56,6 +56,8 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.GET,  "/carts", "/carts/*").hasRole("VENDEDOR")
 
+
+
                                 .requestMatchers(HttpMethod.GET, "/cart-products/**").hasAnyRole("VENDEDOR", "COMPRADOR")
 
                                 .requestMatchers(HttpMethod.POST,   "/cart-products").hasRole("COMPRADOR")
@@ -66,7 +68,6 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.POST,  "/orders").hasRole("COMPRADOR")
                                 .requestMatchers(HttpMethod.PATCH, "/orders/*/cancel").hasRole("COMPRADOR")
-
 
                                 .anyRequest().authenticated()
                         )
