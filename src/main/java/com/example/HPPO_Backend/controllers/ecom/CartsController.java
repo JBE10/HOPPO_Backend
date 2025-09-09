@@ -28,8 +28,6 @@ public class CartsController {
         return ResponseEntity.ok(cartService.getCarts(PageRequest.of(page, size)));
     }
  
-
- 
     @PostMapping
     public ResponseEntity<Object> createCart(@RequestBody CartRequest cartRequest) {
         Cart result = this.cartService.createCart(cartRequest);
