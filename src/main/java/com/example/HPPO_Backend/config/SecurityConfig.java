@@ -30,10 +30,10 @@ public class SecurityConfig {
                         .csrf(AbstractHttpConfigurer::disable)
                         .sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
                         .authorizeHttpRequests(auth -> auth
-                                // --- Público / Auth ---
+
                                 .requestMatchers("/api/v1/auth/**", "/auth/**", "/error/**").permitAll()
 
-                                // --- Catálogo público ---
+
                                 .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/brands/**").permitAll()
 
 
@@ -53,25 +53,21 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.GET,  "/carts/my-cart").hasRole("COMPRADOR")
                                 .requestMatchers(HttpMethod.POST, "/carts").hasRole("COMPRADOR")
-                                // VENDEDOR: puede ver todos los carritos
-                                .requestMatchers(HttpMethod.GET,  "/carts", "/carts/*").hasRole("VENDEDOR")
-                                // (Si luego agregás PUT/DELETE de carts, restringilos a COMPRADOR y validá ownership en service)
 
-                                // --- Cart-Products (líneas del carrito) ---
-                                // Lectura: ambos roles (ownership del COMPRADOR en service)
+                                .requestMatchers(HttpMethod.GET,  "/carts", "/carts/*").hasRole("VENDEDOR")
+
                                 .requestMatchers(HttpMethod.GET, "/cart-products/**").hasAnyRole("VENDEDOR", "COMPRADOR")
-                                // Mutaciones: solo COMPRADOR (ownership en service)
+
                                 .requestMatchers(HttpMethod.POST,   "/cart-products").hasRole("COMPRADOR")
                                 .requestMatchers(HttpMethod.DELETE, "/cart-products/*").hasRole("COMPRADOR")
 
-                                // --- Orders ---
-                                // VENDEDOR: ver listados y detalle
+
                                 .requestMatchers(HttpMethod.GET, "/orders", "/orders/*").hasRole("VENDEDOR")
-                                // COMPRADOR: crear y cancelar
+
                                 .requestMatchers(HttpMethod.POST,  "/orders").hasRole("COMPRADOR")
                                 .requestMatchers(HttpMethod.PATCH, "/orders/*/cancel").hasRole("COMPRADOR")
 
-                                // --- Resto autenticado ---
+
                                 .anyRequest().authenticated()
                         )
                         .authenticationProvider(authenticationProvider)
