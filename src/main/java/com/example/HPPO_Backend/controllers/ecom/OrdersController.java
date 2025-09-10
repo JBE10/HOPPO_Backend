@@ -42,8 +42,8 @@ public class OrdersController {
     @PostMapping
     public ResponseEntity<Object> createOrder(
             @RequestBody OrderRequest orderRequest,
-            @AuthenticationPrincipal User user) { // Aquí se inyecta el usuario autenticado
-        Order result = this.orderService.createOrder(orderRequest, user); // Se pasa el usuario al servicio
+            @AuthenticationPrincipal User user) {
+        Order result = this.orderService.createOrder(orderRequest, user);
         return ResponseEntity.created(URI.create("/orders/" + result.getId())).body(result);
     }
     @PatchMapping("/{orderId}/cancel")
