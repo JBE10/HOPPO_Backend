@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -39,17 +41,18 @@ public class OrderServiceImpl implements OrderService {
     public Optional<Order> getOrderById(Long orderId) {
         return orderRepository.findById(orderId);
     }
-
     @Override
     @Transactional
     public Order createOrder(OrderRequest orderRequest, User user) {
-
         Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado para el usuario"));
 
-        if (orderRepository.findByCartId(cart.getId()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "El carrito ya se encuentra en una orden.");
+        // Verificar si el carrito está vacío
+        if (cart.getItems() == null || cart.getItems().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede crear una orden con un carrito vacío.");
         }
+
+
 
         Double total = 0.0;
         for (CartProduct item : cart.getItems()) {
@@ -72,13 +75,14 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(newOrder);
 
-        // LÓGICA CORREGIDA: Vaciar el carrito existente
+        // Vaciar el carrito después de crear la orden
         cart.getItems().clear();
         cart.setQuantity(0);
         cartRepository.save(cart);
 
         return savedOrder;
     }
+
     @Override
     @Transactional
     public Order cancelOrder(Long orderId) {
@@ -88,12 +92,9 @@ public class OrderServiceImpl implements OrderService {
         if (order.getStatus() == OrderStatus.CANCELLED) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "La orden ya ha sido cancelada.");
         }
-        for (CartProduct item : order.getCart().getItems()) {
-            Product product = item.getProduct();
-            product.setStock(product.getStock() + item.getQuantity());
-        }
+
+
         order.setStatus(OrderStatus.CANCELLED);
         return orderRepository.save(order);
     }
-
 }
