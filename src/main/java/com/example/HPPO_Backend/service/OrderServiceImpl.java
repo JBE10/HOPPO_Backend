@@ -13,10 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 
 @Service
@@ -41,23 +38,37 @@ public class OrderServiceImpl implements OrderService {
     public Optional<Order> getOrderById(Long orderId) {
         return orderRepository.findById(orderId);
     }
+
     @Override
     @Transactional
     public Order createOrder(OrderRequest orderRequest, User user) {
+        // Validar datos del request
+        if (orderRequest.getAddress() == null || orderRequest.getAddress().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La dirección es obligatoria");
+        }
+
+        if (orderRequest.getShipping() == null || orderRequest.getShipping().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El método de envío es obligatorio");
+        }
+
+        // Buscar el carrito del usuario
         Cart cart = cartRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado para el usuario"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Carrito no encontrado para el usuario con ID: " + user.getId()));
 
         // Verificar si el carrito está vacío
         if (cart.getItems() == null || cart.getItems().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede crear una orden con un carrito vacío.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "No se puede crear una orden con un carrito vacío");
         }
 
-
-
+        // Calcular el total
         Double total = 0.0;
         for (CartProduct item : cart.getItems()) {
             Product product = item.getProduct();
             Double priceToUse = product.getPrice();
+
+            // Aplicar descuento si existe
             if (product.getDiscount() != null && product.getDiscount() > 0 && product.getDiscount() < 100) {
                 double discountMultiplier = 1 - (product.getDiscount() / 100.0);
                 priceToUse = product.getPrice() * discountMultiplier;
@@ -65,17 +76,34 @@ public class OrderServiceImpl implements OrderService {
             total += priceToUse * item.getQuantity();
         }
 
+        // Crear la nueva orden
         Order newOrder = new Order();
-        newOrder.setAddress(orderRequest.getAddress());
-        newOrder.setShipping(orderRequest.getShipping());
+        newOrder.setAddress(orderRequest.getAddress().trim());
+        newOrder.setShipping(orderRequest.getShipping().trim());
         newOrder.setTotal(total);
         newOrder.setOrderDate(LocalDateTime.now());
         newOrder.setUser(user);
         newOrder.setCart(cart);
+        newOrder.setStatus(OrderStatus.CREATED); // Establecer explícitamente el status
 
+        // Log para debugging
+        System.out.println("Creando orden para usuario ID: " + user.getId());
+        System.out.println("Carrito ID: " + cart.getId());
+        System.out.println("Total: " + total);
+        System.out.println("Items en carrito: " + cart.getItems().size());
+
+        // Guardar la orden ANTES de limpiar el carrito
         Order savedOrder = orderRepository.save(newOrder);
 
-        // Vaciar el carrito después de crear la orden
+        // Verificar que se guardó correctamente
+        if (savedOrder.getId() == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Error al guardar la orden en la base de datos");
+        }
+
+        System.out.println("Orden guardada con ID: " + savedOrder.getId());
+
+        // Limpiar el carrito después de crear la orden
         cart.getItems().clear();
         cart.setQuantity(0);
         cartRepository.save(cart);
@@ -90,11 +118,16 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Orden no encontrada"));
 
         if (order.getStatus() == OrderStatus.CANCELLED) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "La orden ya ha sido cancelada.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "La orden ya ha sido cancelada");
         }
-
 
         order.setStatus(OrderStatus.CANCELLED);
         return orderRepository.save(order);
+    }
+
+
+    @Override
+    public Page<Order> getMyOrders(User user, PageRequest pageRequest) {
+        return orderRepository.findByUserIdOrderByOrderDateDesc(user.getId(), pageRequest);
     }
 }

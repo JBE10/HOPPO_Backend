@@ -14,5 +14,6 @@ public interface OrderService {
     Optional<Order> getOrderById(Long orderId);
     Order createOrder(OrderRequest orderRequest,User user);
     Order cancelOrder(Long orderId);
+    Page<Order> getMyOrders(User user, PageRequest pageRequest);
 
 }

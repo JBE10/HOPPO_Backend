@@ -33,40 +33,34 @@ public class SecurityConfig {
 
                                 .requestMatchers("/api/v1/auth/**", "/auth/**", "/error/**").permitAll()
 
-
+                                // Productos - público para leer, vendedor para modificar
                                 .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/brands/**").permitAll()
-
                                 .requestMatchers(HttpMethod.POST,   "/products/**").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.PUT,    "/products/**").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole("VENDEDOR")
 
-
+                                // Categorías - público para leer, vendedor para modificar
                                 .requestMatchers(HttpMethod.POST,   "/categories/**").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.PUT,    "/categories/**").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.DELETE, "/categories/**").hasRole("VENDEDOR")
 
-                                .requestMatchers(HttpMethod.GET,  "/carts/my-cart").hasRole("COMPRADOR")
-                                .requestMatchers(HttpMethod.POST, "/carts").hasRole("COMPRADOR")
-
+                                // Marcas - público para leer, vendedor para modificar
                                 .requestMatchers(HttpMethod.POST,   "/brands/**").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.DELETE, "/brands/**").hasRole("VENDEDOR")
 
-
-
-
-
+                                // Carritos - comprador para su propio carrito, vendedor para ver todos
+                                .requestMatchers(HttpMethod.GET,  "/carts/my-cart").hasRole("COMPRADOR")
+                                .requestMatchers(HttpMethod.POST, "/carts").hasRole("COMPRADOR")
                                 .requestMatchers(HttpMethod.GET,  "/carts", "/carts/*").hasRole("VENDEDOR")
 
-
-
+                                // Productos del carrito
                                 .requestMatchers(HttpMethod.GET, "/cart-products/**").hasAnyRole("VENDEDOR", "COMPRADOR")
-
                                 .requestMatchers(HttpMethod.POST,   "/cart-products").hasRole("COMPRADOR")
                                 .requestMatchers(HttpMethod.DELETE, "/cart-products/*").hasRole("COMPRADOR")
 
-
+                                // Órdenes - vendedor ve todas, comprador ve las suyas
                                 .requestMatchers(HttpMethod.GET, "/orders", "/orders/*").hasRole("VENDEDOR")
-
+                                .requestMatchers(HttpMethod.GET, "/orders/my-orders").hasRole("COMPRADOR")  // Nueva ruta
                                 .requestMatchers(HttpMethod.POST,  "/orders").hasRole("COMPRADOR")
                                 .requestMatchers(HttpMethod.PATCH, "/orders/*/cancel").hasRole("COMPRADOR")
 

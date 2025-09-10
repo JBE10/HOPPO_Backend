@@ -52,4 +52,18 @@ public class OrdersController {
         return ResponseEntity.ok(cancelledOrder);
     }
 
+    @GetMapping("/my-orders")
+    public ResponseEntity<Page<Order>> getMyOrders(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @AuthenticationPrincipal User user) {
+
+        PageRequest pageRequest = (page != null && size != null)
+                ? PageRequest.of(page, size)
+                : PageRequest.of(0, Integer.MAX_VALUE);
+
+        Page<Order> myOrders = orderService.getMyOrders(user, pageRequest);
+        return ResponseEntity.ok(myOrders);
+    }
+
 }
