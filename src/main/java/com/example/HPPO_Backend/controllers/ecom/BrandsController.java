@@ -4,6 +4,7 @@ import com.example.HPPO_Backend.entity.Brand;
 import com.example.HPPO_Backend.entity.Product;
 import com.example.HPPO_Backend.entity.dto.BrandRequest;
 import com.example.HPPO_Backend.service.BrandService;
+import com.example.HPPO_Backend.service.BrandServiceImpl;
 import com.example.HPPO_Backend.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,7 @@ import java.util.Optional;
 @RequestMapping("brands")
 public class BrandsController {
     @Autowired
-    private BrandService brandService;
+    private BrandService brandService ;
 
     @Autowired
     private ProductService productService;

@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
+
         private final UserRepository repository;
         private final PasswordEncoder passwordEncoder;
         private final JwtService jwtService;
@@ -33,7 +34,7 @@ public class AuthenticationService {
         public AuthenticationResponse register(RegisterRequest request) {
                 User user = new User();
 
-                // Usar el role que viene en el request
+
                 user.setRole(request.getRole() != null ? request.getRole() : Role.COMPRADOR);
 
                 user.setUsername(request.getEmail());

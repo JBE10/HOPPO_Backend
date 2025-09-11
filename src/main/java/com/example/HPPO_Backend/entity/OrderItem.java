@@ -22,7 +22,7 @@ public class OrderItem {
     private Integer quantity;
 
     @Column(nullable = false)
-    private Double price; // Precio guardado al momento de la compra
+    private Double price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)

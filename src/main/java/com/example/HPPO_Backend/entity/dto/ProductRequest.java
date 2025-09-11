@@ -14,4 +14,5 @@ public class ProductRequest {
     private Integer discount;
     private Long categoryId;
     private List<String> imageUrls;
+
 }

@@ -39,16 +39,11 @@ public class CartServiceImpl implements CartService {
 
         Optional<Cart> existing = cartRepository.findByUserId(cartRequest.getUserId());
         if (existing.isPresent()) {
-            // REMOVER LA VERIFICACIÓN DE ORDER porque ya no existe esa referencia
-            // if (existing.get().getOrder() != null) {
-            //     ...
-            // }
 
-            // Simplemente retornar el carrito existente
             return existing.get();
         }
 
-        // Si no existe carrito, crear uno nuevo
+
         User user = userRepository.findById(cartRequest.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: id=" + cartRequest.getUserId()));
 

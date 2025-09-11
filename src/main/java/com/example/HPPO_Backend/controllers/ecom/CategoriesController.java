@@ -67,4 +67,6 @@ public class CategoriesController {
 
         return ResponseEntity.ok(productService.getAvailableProductsByCategory(categoryId, pageRequest));
     }
+
+
 }

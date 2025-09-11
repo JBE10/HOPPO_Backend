@@ -15,6 +15,7 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.name = ?1")
     List<Product> findByName(String name);
+
     Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
 
     Page<Product> getProductsByBrand(Long brandId, Pageable pageable);
