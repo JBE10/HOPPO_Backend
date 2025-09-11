@@ -53,7 +53,6 @@ public class ProductServiceImpl implements ProductService {
         Brand brand = brandRepository.findById(productRequest.getBrandId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Marca no encontrada con id: " + productRequest.getBrandId()));
 
-
         Product product = new Product();
         product.setName(productRequest.getName());
         product.setPrice(productRequest.getPrice());
@@ -72,8 +71,7 @@ public class ProductServiceImpl implements ProductService {
             product.setImages(images);
         }
 
-        // 5. Guarda el nuevo producto (y sus imágenes en cascada)
-        return productRepository.save(product);
+         return productRepository.save(product);
     }
 
     @Override
@@ -123,6 +121,7 @@ public class ProductServiceImpl implements ProductService {
         }
         productRepository.deleteById(productId);
     }
+
     @Override
     public Page<Product> getProductsByCategory(Long categoryId, PageRequest pageRequest) {
         return productRepository.getProductByCategory(categoryId, pageRequest);
