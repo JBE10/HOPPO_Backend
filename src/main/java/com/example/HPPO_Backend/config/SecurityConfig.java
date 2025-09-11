@@ -63,11 +63,12 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/cart-products/*").hasRole("COMPRADOR")
 
 
-                                .requestMatchers(HttpMethod.GET, "/orders", "/orders/*").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.GET, "/orders/my-orders").hasRole("COMPRADOR")
-                                .requestMatchers(HttpMethod.POST,  "/orders").hasRole("COMPRADOR")
-                                .requestMatchers(HttpMethod.PUT,   "/orders/*").hasAnyRole("VENDEDOR", "COMPRADOR") // NUEVA LÍNEA
                                 .requestMatchers(HttpMethod.PATCH, "/orders/*/cancel").hasRole("COMPRADOR")
+                                .requestMatchers(HttpMethod.POST,  "/orders").hasRole("COMPRADOR")
+
+                                .requestMatchers(HttpMethod.PUT,   "/orders/*").hasAnyRole("VENDEDOR", "COMPRADOR")
+                                .requestMatchers(HttpMethod.GET, "/orders", "/orders/*").hasRole("VENDEDOR")
 
 
                                 .anyRequest().authenticated()
