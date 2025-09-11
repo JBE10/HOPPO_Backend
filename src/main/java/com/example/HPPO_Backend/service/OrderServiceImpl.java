@@ -63,45 +63,34 @@ public class OrderServiceImpl implements OrderService {
         }
 
 
-        Double total = 0.0;
-        for (CartProduct item : cart.getItems()) {
-            Product product = item.getProduct();
-            Double priceToUse = product.getPrice();
+        Order newOrder = new Order();
+        newOrder.setAddress(orderRequest.getAddress().trim());
+        newOrder.setShipping(orderRequest.getShipping().trim());
+        newOrder.setUser(user);
+        newOrder.setStatus(OrderStatus.CREATED);
+        newOrder.setOrderDate(LocalDateTime.now());
+
+        double total = 0.0;
+        for (CartProduct cartItem : cart.getItems()) {
+            Product product = cartItem.getProduct();
+            double priceAtPurchase = product.getPrice();
 
 
             if (product.getDiscount() != null && product.getDiscount() > 0 && product.getDiscount() < 100) {
                 double discountMultiplier = 1 - (product.getDiscount() / 100.0);
-                priceToUse = product.getPrice() * discountMultiplier;
+                priceAtPurchase = product.getPrice() * discountMultiplier;
             }
-            total += priceToUse * item.getQuantity();
+            total += priceAtPurchase * cartItem.getQuantity();
+
+
+            OrderItem orderItem = new OrderItem(product, cartItem.getQuantity(), priceAtPurchase, newOrder);
+            newOrder.getItems().add(orderItem);
         }
 
-        // Crear la nueva orden
-        Order newOrder = new Order();
-        newOrder.setAddress(orderRequest.getAddress().trim());
-        newOrder.setShipping(orderRequest.getShipping().trim());
         newOrder.setTotal(total);
-        newOrder.setOrderDate(LocalDateTime.now());
-        newOrder.setUser(user);
-        newOrder.setCart(cart);
-        newOrder.setStatus(OrderStatus.CREATED);
-
-
-        System.out.println("Creando orden para usuario ID: " + user.getId());
-        System.out.println("Carrito ID: " + cart.getId());
-        System.out.println("Total: " + total);
-        System.out.println("Items en carrito: " + cart.getItems().size());
 
 
         Order savedOrder = orderRepository.save(newOrder);
-
-
-        if (savedOrder.getId() == null) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Error al guardar la orden en la base de datos");
-        }
-
-        System.out.println("Orden guardada con ID: " + savedOrder.getId());
 
 
         cart.getItems().clear();
@@ -113,9 +102,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order cancelOrder(Long orderId) {
+    public Order cancelOrder(Long orderId, User user) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Orden no encontrada"));
+
+
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permisos para cancelar esta orden");
+        }
 
         if (order.getStatus() == OrderStatus.CANCELLED) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "La orden ya ha sido cancelada");
@@ -124,6 +118,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.CANCELLED);
         return orderRepository.save(order);
     }
+
 
 
     @Override

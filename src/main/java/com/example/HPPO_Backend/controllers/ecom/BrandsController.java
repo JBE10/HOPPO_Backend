@@ -1,9 +1,13 @@
 package com.example.HPPO_Backend.controllers.ecom;
 
 import com.example.HPPO_Backend.entity.Brand;
+import com.example.HPPO_Backend.entity.Product;
 import com.example.HPPO_Backend.entity.dto.BrandRequest;
 import com.example.HPPO_Backend.service.BrandService;
+import com.example.HPPO_Backend.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +20,9 @@ import java.util.Optional;
 public class BrandsController {
     @Autowired
     private BrandService brandService;
+
+    @Autowired
+    private ProductService productService;
 
     @GetMapping
     public ResponseEntity<List<Brand>> getBrands() {
@@ -38,5 +45,18 @@ public class BrandsController {
     public ResponseEntity<Void> deleteBrand(@PathVariable Long brandId){
         this.brandService.deleteBrand(brandId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{brandId}/products")
+    public ResponseEntity<Page<Product>> getProductsByBrand(
+            @PathVariable Long brandId,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
+        PageRequest pageRequest = (page != null && size != null)
+                ? PageRequest.of(page, size)
+                : PageRequest.of(0, Integer.MAX_VALUE);
+
+        return ResponseEntity.ok(productService.getAvailableProductsByBrand(brandId, pageRequest));
     }
 }

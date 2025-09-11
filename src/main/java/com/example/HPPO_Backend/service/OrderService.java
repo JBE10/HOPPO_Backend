@@ -13,7 +13,7 @@ public interface OrderService {
     Page<Order> getOrders(PageRequest pageRequest);
     Optional<Order> getOrderById(Long orderId);
     Order createOrder(OrderRequest orderRequest,User user);
-    Order cancelOrder(Long orderId);
+    Order cancelOrder(Long orderId, User user);
     Order updateOrder(Long orderId, OrderRequest orderRequest, User user);
     Page<Order> getMyOrders(User user, PageRequest pageRequest);
 

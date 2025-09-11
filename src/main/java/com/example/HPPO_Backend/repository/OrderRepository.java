@@ -14,7 +14,6 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    List<Order> findByCartId(Long cartId);
 
 
     List<Order> findByUserId(Long userId);
@@ -24,6 +23,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 
 
-    @Query("SELECT o FROM Order o WHERE o.user.id = :userId ORDER BY o.orderDate DESC")
+    @Query(value = "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.items WHERE o.user.id = :userId",
+            countQuery = "SELECT COUNT(o) FROM Order o WHERE o.user.id = :userId")
     Page<Order> findByUserIdOrderByOrderDateDesc(@Param("userId") Long userId, Pageable pageable);
+
 }

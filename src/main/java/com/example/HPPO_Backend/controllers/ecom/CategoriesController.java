@@ -3,8 +3,10 @@ package com.example.HPPO_Backend.controllers.ecom;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.example.HPPO_Backend.entity.Category;
+import com.example.HPPO_Backend.entity.Product;
 import com.example.HPPO_Backend.entity.dto.CategoryRequest;
 import com.example.HPPO_Backend.service.CategoryService;
+import com.example.HPPO_Backend.service.ProductService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,15 +16,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("categories")
-
-
-
 public class CategoriesController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping
+    @Autowired
+    private ProductService productService;
 
+    @GetMapping
     public ResponseEntity<Page<Category>> getCategories(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
@@ -52,5 +53,18 @@ public class CategoriesController {
     public ResponseEntity<Category> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryRequest categoryRequest) throws Exception {
         Category updatedCategory = categoryService.updateCategory(categoryId, categoryRequest);
         return ResponseEntity.ok(updatedCategory);
+    }
+
+    @GetMapping("/{categoryId}/products")
+    public ResponseEntity<Page<Product>> getProductsByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
+        PageRequest pageRequest = (page != null && size != null)
+                ? PageRequest.of(page, size)
+                : PageRequest.of(0, Integer.MAX_VALUE);
+
+        return ResponseEntity.ok(productService.getAvailableProductsByCategory(categoryId, pageRequest));
     }
 }

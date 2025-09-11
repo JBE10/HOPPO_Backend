@@ -56,9 +56,10 @@ public class OrdersController {
         return ResponseEntity.created(URI.create("/orders/" + result.getId())).body(result);
     }
     @PatchMapping("/{orderId}/cancel")
-    public ResponseEntity<Order> cancelOrder(@PathVariable Long orderId) {
-        Order cancelledOrder = this.orderService.cancelOrder(orderId);
+    public ResponseEntity<Order> cancelOrder(@PathVariable Long orderId, @AuthenticationPrincipal User user) {
+        Order cancelledOrder = this.orderService.cancelOrder(orderId, user);
         return ResponseEntity.ok(cancelledOrder);
+
     }
 
     @GetMapping("/my-orders")
@@ -74,7 +75,5 @@ public class OrdersController {
         Page<Order> myOrders = orderService.getMyOrders(user, pageRequest);
         return ResponseEntity.ok(myOrders);
     }
-
-
 
 }
