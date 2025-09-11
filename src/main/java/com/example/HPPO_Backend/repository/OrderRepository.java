@@ -13,17 +13,17 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    // CAMBIAR de buscar una sola orden por carrito a múltiples
+
     List<Order> findByCartId(Long cartId);
 
-    // Método útil para encontrar órdenes por usuario
+
     List<Order> findByUserId(Long userId);
 
-    // Método para encontrar la última orden de un usuario
+
     Optional<Order> findTopByUserIdOrderByOrderDateDesc(Long userId);
 
 
-    // Nuevo método para obtener órdenes de un usuario con paginación y ordenadas por fecha descendente
+
     @Query("SELECT o FROM Order o WHERE o.user.id = :userId ORDER BY o.orderDate DESC")
     Page<Order> findByUserIdOrderByOrderDateDesc(@Param("userId") Long userId, Pageable pageable);
 }

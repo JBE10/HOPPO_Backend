@@ -38,6 +38,15 @@ public class OrdersController {
         Optional<Order> result = this.orderService.getOrderById(orderId);
         return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
+    @PutMapping("/{orderId}")
+    public ResponseEntity<Order> updateOrder(
+            @PathVariable Long orderId,
+            @RequestBody OrderRequest orderRequest,
+            @AuthenticationPrincipal User user) {
+        Order updatedOrder = this.orderService.updateOrder(orderId, orderRequest, user);
+        return ResponseEntity.ok(updatedOrder);
+    }
+
 
     @PostMapping
     public ResponseEntity<Object> createOrder(
@@ -65,5 +74,7 @@ public class OrdersController {
         Page<Order> myOrders = orderService.getMyOrders(user, pageRequest);
         return ResponseEntity.ok(myOrders);
     }
+
+
 
 }

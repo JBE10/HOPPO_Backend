@@ -25,7 +25,7 @@ public class Category {
         this.description = description;
     }
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products; // Una categoría tiene muchos productos
+    private List<Product> products;
 
 
 }

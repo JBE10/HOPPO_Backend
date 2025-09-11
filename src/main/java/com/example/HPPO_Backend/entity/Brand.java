@@ -16,6 +16,6 @@ public class Brand {
     private String name;
 
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products; // Una marca tiene muchos productos
+    private List<Product> products;
 
 }

@@ -72,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
             product.setImages(images);
         }
 
-        // 5. Guarda el nuevo producto (y sus imágenes en cascada)
+
         return productRepository.save(product);
     }
 
