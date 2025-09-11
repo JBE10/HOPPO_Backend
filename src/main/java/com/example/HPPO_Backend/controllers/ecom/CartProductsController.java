@@ -32,7 +32,7 @@ public class CartProductsController {
 
     @PostMapping
     public ResponseEntity<Object> createCartProduct(@RequestBody CartProductRequest request, @AuthenticationPrincipal User user) {
-        CartProduct result = this.cartProductService.createCartProduct(request, user); // Pasar el objeto user
+        CartProduct result = this.cartProductService.createCartProduct(request, user);
         return ResponseEntity.created(URI.create("/cart-products/" + result.getId())).body(result);
     }
     @DeleteMapping("/{id}")
