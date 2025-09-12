@@ -5,13 +5,19 @@ import com.example.HPPO_Backend.entity.User;
 import com.example.HPPO_Backend.entity.dto.CartRequest;
 import com.example.HPPO_Backend.repository.CartRepository;
 import com.example.HPPO_Backend.repository.UserRepository;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -25,12 +31,33 @@ public class CartServiceImpl implements CartService {
         this.userRepository = userRepository;
     }
 
+    @Override
     public Page<Cart> getCarts(PageRequest pageable) {
-        return cartRepository.findAll(pageable);
+    	Page<Cart> page = cartRepository.findAll(pageable);
+        LocalDateTime now = LocalDateTime.now();
+
+        List<Cart> valid = page.getContent().stream()
+                .filter(cart -> cart.getExpiresAt() != null && cart.getExpiresAt().isAfter(now))
+                .collect(Collectors.toList());
+
+        //Elimina los expirados
+        page.stream()
+            .filter(cart -> !cart.getExpiresAt().isAfter(now))
+            .forEach(cartRepository::delete);
+        return new PageImpl<>(valid, pageable, valid.size());
     }
 
+    @Override
     public Optional<Cart> getCartById(Long cartId) {
-        return cartRepository.findById(cartId);
+        return cartRepository.findById(cartId)
+	        .flatMap(cart -> {
+	            if (cart.getExpiresAt() == null || cart.getExpiresAt().isAfter(LocalDateTime.now())) {
+	                return Optional.of(cart);
+	            } else {
+	                cartRepository.delete(cart);
+	                return Optional.empty();
+	            }
+	        });        
     }
 
     public Cart createCart(CartRequest cartRequest) {
@@ -41,8 +68,13 @@ public class CartServiceImpl implements CartService {
         if (existing.isPresent()) {
 
             return existing.get();
-        }
+            Cart found = existing.get();
 
+            if (found.getExpiresAt() == null || found.getExpiresAt().isAfter(LocalDateTime.now())) {
+                return found;
+            }
+            cartRepository.delete(found);
+        }
 
         User user = userRepository.findById(cartRequest.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: id=" + cartRequest.getUserId()));
@@ -55,6 +87,14 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Optional<Cart> getCartByUserId(Long userId) {
-        return cartRepository.findByUserId(userId);
+        return cartRepository.findByUserId(userId)
+                .flatMap(cart -> {
+                    if (cart.getExpiresAt() == null || cart.getExpiresAt().isAfter(LocalDateTime.now())) {
+                        return Optional.of(cart);
+                    } else {
+                        cartRepository.delete(cart);
+                        return Optional.empty();
+                    }
+                });
     }
 }
