@@ -3,6 +3,7 @@ package com.example.HPPO_Backend.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -22,5 +23,22 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartProduct> items;
 
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
+
+    @PrePersist
+    protected void onCreate() {
+        
+        this.expiresAt = LocalDateTime.now().plusHours(24);
+    }
+
+    public boolean isExpired() {
+        return expiresAt != null && LocalDateTime.now().isAfter(expiresAt);
+    }
+
+    public void extendExpiration() {
+        
+        this.expiresAt = LocalDateTime.now().plusHours(24);
+    }
 
 }

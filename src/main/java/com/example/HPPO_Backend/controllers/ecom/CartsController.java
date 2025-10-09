@@ -4,7 +4,6 @@ import com.example.HPPO_Backend.entity.Cart;
 import com.example.HPPO_Backend.entity.User;
 import com.example.HPPO_Backend.entity.dto.CartRequest;
 import com.example.HPPO_Backend.service.CartService;
-import com.example.HPPO_Backend.service.CartServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,7 +38,8 @@ public class CartsController {
 
     @GetMapping("/my-cart")
     public ResponseEntity<Cart> getMyCart(@AuthenticationPrincipal User user) {
-        Optional<Cart> result = this.cartService.getCartByUserId(user.getId());
+        // Buscar carrito activo (no expirado) del usuario
+        Optional<Cart> result = this.cartService.getActiveCartByUserId(user.getId());
         return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 
@@ -47,6 +47,45 @@ public class CartsController {
     public ResponseEntity<Cart> getCartById(@PathVariable Long cartId) {
         Optional<Cart> result = this.cartService.getCartById(cartId);
         return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    /**
+     * Extiende la expiración del carrito del usuario autenticado
+     */
+    @PostMapping("/my-cart/extend")
+    public ResponseEntity<String> extendMyCartExpiration(@AuthenticationPrincipal User user) {
+        Optional<Cart> cart = this.cartService.getCartByUserId(user.getId());
+        if (cart.isPresent()) {
+            this.cartService.extendCartExpiration(cart.get().getId());
+            return ResponseEntity.ok("Expiración del carrito extendida por 24 horas");
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    /**
+     * Extiende la expiración de un carrito específico
+     */
+    @PostMapping("/{cartId}/extend")
+    public ResponseEntity<String> extendCartExpiration(@PathVariable Long cartId) {
+        try {
+            this.cartService.extendCartExpiration(cartId);
+            return ResponseEntity.ok("Expiración del carrito extendida por 24 horas");
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Endpoint administrativo para limpiar carritos expirados manualmente
+     */
+    @PostMapping("/admin/cleanup")
+    public ResponseEntity<String> cleanupExpiredCarts() {
+        try {
+            int deletedCount = this.cartService.deleteExpiredCarts();
+            return ResponseEntity.ok("Carritos expirados eliminados: " + deletedCount);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error durante la limpieza: " + e.getMessage());
+        }
     }
 
 }
