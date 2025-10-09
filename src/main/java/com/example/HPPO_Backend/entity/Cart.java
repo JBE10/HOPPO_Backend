@@ -3,6 +3,7 @@ package com.example.HPPO_Backend.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.time.LocalDateTime;
 
@@ -34,6 +35,23 @@ public class Cart {
         if (createdAt == null) createdAt = LocalDateTime.now();
         if (expiresAt == null) expiresAt = createdAt.plusHours(24); // Para que el carrito expire en 24hs
         }
+
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
+
+    @PrePersist
+    protected void onCreate() {
+        
+        this.expiresAt = LocalDateTime.now().plusHours(24);
+    }
+
+    public boolean isExpired() {
+        return expiresAt != null && LocalDateTime.now().isAfter(expiresAt);
+    }
+
+    public void extendExpiration() {
+        
+        this.expiresAt = LocalDateTime.now().plusHours(24);
     }
 
 }

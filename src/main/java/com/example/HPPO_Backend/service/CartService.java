@@ -11,4 +11,10 @@ public interface CartService {
     Optional<Cart> getCartById(Long cartId);
     Optional<Cart> getCartByUserId(Long userId);
     Cart createCart(CartRequest cartRequest);
+    
+ 
+    Optional<Cart> getActiveCartByUserId(Long userId);
+    void extendCartExpiration(Long cartId);
+    void cleanExpiredCarts();
+    int deleteExpiredCarts();
 }
