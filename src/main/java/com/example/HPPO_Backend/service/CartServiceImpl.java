@@ -40,13 +40,12 @@ public class CartServiceImpl implements CartService {
         if (cartRequest.getUserId() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId es obligatorio");
 
-        // Buscar carrito activo (no expirado) del usuario
+        
         Optional<Cart> existingActive = cartRepository.findActiveCartByUserId(cartRequest.getUserId(), LocalDateTime.now());
         if (existingActive.isPresent()) {
             return existingActive.get();
         }
 
-        // Si hay un carrito expirado, eliminarlo antes de crear uno nuevo
         Optional<Cart> existingExpired = cartRepository.findByUserId(cartRequest.getUserId());
         if (existingExpired.isPresent() && existingExpired.get().isExpired()) {
             cartRepository.delete(existingExpired.get());
@@ -65,6 +64,7 @@ public class CartServiceImpl implements CartService {
     public Optional<Cart> getCartByUserId(Long userId) {
         return cartRepository.findByUserId(userId);
     }
+    
 
     @Override
     public Optional<Cart> getActiveCartByUserId(Long userId) {

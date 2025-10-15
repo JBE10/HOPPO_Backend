@@ -20,7 +20,16 @@ public  class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public Page<Category> getCategories(PageRequest pageable) {
+    public Page<Category> getCategories(PageRequest pageable, String type) {
+        if (type != null && !type.isEmpty()) {
+            try {
+                Category.CategoryType categoryType = Category.CategoryType.valueOf(type.toUpperCase());
+                return categoryRepository.findByType(categoryType, pageable);
+            } catch (IllegalArgumentException e) {
+                // Si el tipo no es válido, devolver todas las categorías
+                return categoryRepository.findAll(pageable);
+            }
+        }
         return categoryRepository.findAll(pageable);
     }
 
@@ -28,10 +37,10 @@ public  class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findById(categoryId);
     }
 
-    public Category createCategory( String description) throws CategoryDuplicateException {
+    public Category createCategory(String description, Category.CategoryType type) throws CategoryDuplicateException {
         List<Category> categories = categoryRepository.findByName(description);
         if (categories.isEmpty()) {
-        return categoryRepository.save(new Category(description));
+        return categoryRepository.save(new Category(description, type));
         }
         throw new CategoryDuplicateException();
     }
@@ -49,6 +58,7 @@ public  class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoría no encontrada con id: " + categoryId));
         category.setDescription(categoryRequest.getDescription());
+        category.setType(categoryRequest.getType());
         return categoryRepository.save(category);
     }
 

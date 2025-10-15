@@ -10,6 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -28,12 +31,15 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
                         .csrf(AbstractHttpConfigurer::disable)
+                        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                         .sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
                         .authorizeHttpRequests(auth -> auth
 
 
                                 .requestMatchers("/api/v1/auth/**", "/auth/**", "/error/**").permitAll()
 
+                                // Endpoint para obtener perfil del usuario autenticado
+                                .requestMatchers(HttpMethod.GET, "/users/myuser").hasAnyRole("COMPRADOR", "VENDEDOR")
 
                                 .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/brands/**").permitAll()
                                 .requestMatchers(HttpMethod.POST,   "/products/**").hasRole("VENDEDOR")
@@ -77,5 +83,18 @@ public class SecurityConfig {
                         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
+        }
+
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.addAllowedOriginPattern("*"); // Permitir cualquier origen en desarrollo
+                configuration.addAllowedMethod("*"); // Permitir todos los métodos HTTP
+                configuration.addAllowedHeader("*"); // Permitir todos los headers
+                configuration.setAllowCredentials(true); // Permitir credenciales
+                
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
         }
 }

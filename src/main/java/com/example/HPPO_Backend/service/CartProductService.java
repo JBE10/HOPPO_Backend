@@ -9,7 +9,9 @@ import java.util.Optional;
 
 public interface CartProductService {
     List<CartProduct> getCartProducts();
+    List<CartProduct> getCartProductsByUser(Long userId);
     Optional<CartProduct> getCartProductById(Long id);
     CartProduct createCartProduct(CartProductRequest request, User user); // Pasar el usuario
+    CartProduct updateCartProduct(Long id, CartProductRequest request);
     void deleteCartProduct(Long id);
 }
