@@ -76,6 +76,9 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT,   "/orders/*").hasAnyRole("VENDEDOR", "COMPRADOR")
                                 .requestMatchers(HttpMethod.GET, "/orders", "/orders/*").hasRole("VENDEDOR")
 
+                                // Upload endpoints
+                                .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/uploads").hasRole("VENDEDOR")
 
                                 .anyRequest().authenticated()
                         )
