@@ -19,10 +19,6 @@ public class ScheduledTasksConfig {
         this.cartService = cartService;
     }
 
-    /**
-     * Ejecuta la limpieza de carritos expirados cada 30 minutos
-     * Se ejecuta a los 0 y 30 minutos de cada hora
-     */
     @Scheduled(cron = "0 */30 * * * *")
     public void cleanExpiredCarts() {
         try {
@@ -34,10 +30,6 @@ public class ScheduledTasksConfig {
         }
     }
 
-    /**
-     * Ejecuta la limpieza de carritos expirados diariamente a las 2:00 AM
-     * Como respaldo adicional
-     */
     @Scheduled(cron = "0 0 2 * * *")
     public void dailyCartCleanup() {
         try {

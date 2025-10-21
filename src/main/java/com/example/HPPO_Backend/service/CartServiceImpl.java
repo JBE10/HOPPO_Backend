@@ -9,7 +9,6 @@ import com.example.HPPO_Backend.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,73 +25,69 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
 
-    public CartServiceImpl(CartRepository cartRepository,
-                           UserRepository userRepository) {
+    public CartServiceImpl(CartRepository cartRepository, UserRepository userRepository) {
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
     }
 
     @Override
     public Page<Cart> getCarts(PageRequest pageable) {
-    	Page<Cart> page = cartRepository.findAll(pageable);
+        Page<Cart> page = cartRepository.findAll(pageable);
         LocalDateTime now = LocalDateTime.now();
 
+        // Filtrar los carritos válidos (no expirados)
         List<Cart> valid = page.getContent().stream()
                 .filter(cart -> cart.getExpiresAt() != null && cart.getExpiresAt().isAfter(now))
                 .collect(Collectors.toList());
 
-        //Elimina los expirados
-        page.stream()
-            .filter(cart -> !cart.getExpiresAt().isAfter(now))
-            .forEach(cartRepository::delete);
+        // Eliminar los carritos expirados
+        page.getContent().stream()
+                .filter(cart -> cart.getExpiresAt() != null && cart.getExpiresAt().isBefore(now))
+                .forEach(cartRepository::delete);
+
         return new PageImpl<>(valid, pageable, valid.size());
     }
 
     @Override
     public Optional<Cart> getCartById(Long cartId) {
         return cartRepository.findById(cartId)
-	        .flatMap(cart -> {
-	            if (cart.getExpiresAt() == null || cart.getExpiresAt().isAfter(LocalDateTime.now())) {
-	                return Optional.of(cart);
-	            } else {
-	                cartRepository.delete(cart);
-	                return Optional.empty();
-	            }
-	        });        
+                .flatMap(cart -> {
+                    if (cart.getExpiresAt() == null || cart.getExpiresAt().isAfter(LocalDateTime.now())) {
+                        return Optional.of(cart);
+                    } else {
+                        cartRepository.delete(cart);
+                        return Optional.empty();
+                    }
+                });
     }
 
+    @Override
     public Cart createCart(CartRequest cartRequest) {
-        if (cartRequest.getUserId() == null)
+        if (cartRequest.getUserId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId es obligatorio");
+        }
 
-        Optional<Cart> existing = cartRepository.findByUserId(cartRequest.getUserId());
-        if (existing.isPresent()) {
-
-            return existing.get();
-            Cart found = existing.get();
-
-            if (found.getExpiresAt() == null || found.getExpiresAt().isAfter(LocalDateTime.now())) {
-                return found;
-            }
-            cartRepository.delete(found);
-        // Buscar carrito activo (no expirado) del usuario
+        // Buscar carrito activo (no expirado)
         Optional<Cart> existingActive = cartRepository.findActiveCartByUserId(cartRequest.getUserId(), LocalDateTime.now());
         if (existingActive.isPresent()) {
             return existingActive.get();
         }
 
-        // Si hay un carrito expirado, eliminarlo antes de crear uno nuevo
+        // Si hay un carrito expirado, eliminarlo
         Optional<Cart> existingExpired = cartRepository.findByUserId(cartRequest.getUserId());
         if (existingExpired.isPresent() && existingExpired.get().isExpired()) {
             cartRepository.delete(existingExpired.get());
         }
 
+        // Crear nuevo carrito
         User user = userRepository.findById(cartRequest.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: id=" + cartRequest.getUserId()));
 
         Cart cart = new Cart();
         cart.setQuantity(cartRequest.getQuantity() == null ? 0 : cartRequest.getQuantity());
         cart.setUser(user);
+        cart.extendExpiration(); // opcional, si querés que siempre arranque con fecha de expiración nueva
+
         return cartRepository.save(cart);
     }
 
@@ -121,7 +114,7 @@ public class CartServiceImpl implements CartService {
     public void extendCartExpiration(Long cartId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado: id=" + cartId));
-        
+
         cart.extendExpiration();
         cartRepository.save(cart);
     }

@@ -26,10 +26,11 @@ public class CategoriesController {
     @GetMapping
     public ResponseEntity<Page<Category>> getCategories(
             @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String type) {
         if (page == null || size == null)
-            return ResponseEntity.ok(categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE)));
-        return ResponseEntity.ok(categoryService.getCategories(PageRequest.of(page, size)));
+            return ResponseEntity.ok(categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE), type));
+        return ResponseEntity.ok(categoryService.getCategories(PageRequest.of(page, size), type));
     }
 
     @GetMapping({"/{categoryId}"})
@@ -40,7 +41,7 @@ public class CategoriesController {
 
     @PostMapping
     public ResponseEntity<Object> createCategory(@RequestBody CategoryRequest categoryRequest) throws Exception {
-        Category result = this.categoryService.createCategory( categoryRequest.getDescription());
+        Category result = this.categoryService.createCategory(categoryRequest.getDescription(), categoryRequest.getType());
         return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(result);
     }
     @DeleteMapping("/{categoryId}")

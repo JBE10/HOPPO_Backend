@@ -11,9 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 public interface CategoryService {
-     Page<Category> getCategories(PageRequest pageRequest);
+     Page<Category> getCategories(PageRequest pageRequest, String type);
      Optional<Category> getCategoryById(Long categoryId);
-     Category createCategory( String description) throws Exception;
+     Category createCategory(String description, Category.CategoryType type) throws Exception;
      void deleteCategory(Long categoryId) throws Exception;
      Category updateCategory(Long categoryId, CategoryRequest categoryRequest);
 }

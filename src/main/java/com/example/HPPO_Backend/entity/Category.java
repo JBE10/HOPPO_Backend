@@ -1,5 +1,6 @@
 package com.example.HPPO_Backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,7 +10,10 @@ import java.util.List;
 @Entity
 public class Category {
 
-
+    public enum CategoryType {
+        COMPONENTE,
+        PERIFERICO
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,15 +21,22 @@ public class Category {
 
     @Column(nullable = false)
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryType type;
+
     public Category() {
 
     }
 
-    public Category(String description) {
+    public Category(String description, CategoryType type) {
         this.description = description;
+        this.type = type;
     }
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products;
 
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Product> products;
 
 }
