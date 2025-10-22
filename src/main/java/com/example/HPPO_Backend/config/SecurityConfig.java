@@ -76,10 +76,13 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/orders", "/orders/*").hasRole("VENDEDOR")
 
                                 // Upload endpoints
-                                .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/uploads").hasRole("VENDEDOR")
+                                    .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+                                    .requestMatchers(HttpMethod.POST, "/uploads").hasRole("VENDEDOR")
 
-                                .anyRequest().authenticated()
+                                    // Payment endpoints
+                                    .requestMatchers(HttpMethod.POST, "/payments/**").hasRole("COMPRADOR")
+
+                                    .anyRequest().authenticated()
                         )
                         .authenticationProvider(authenticationProvider)
                         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
