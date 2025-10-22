@@ -34,8 +34,7 @@ public class SecurityConfig {
                         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                         .sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
                         .authorizeHttpRequests(auth -> auth
-
-
+                            
                                 .requestMatchers("/api/v1/auth/**", "/auth/**", "/error/**").permitAll()
 
                                 // Endpoint para obtener perfil del usuario autenticado

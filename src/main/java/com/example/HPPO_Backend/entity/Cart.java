@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -20,7 +19,6 @@ public class Cart {
     @JsonIgnore
     private User user;
 
-
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartProduct> items;
     
@@ -34,15 +32,6 @@ public class Cart {
     public void prePersist() {
         if (createdAt == null) createdAt = LocalDateTime.now();
         if (expiresAt == null) expiresAt = createdAt.plusHours(24); // Para que el carrito expire en 24hs
-        }
-
-    @Column(name = "expires_at")
-    private LocalDateTime expiresAt;
-
-    @PrePersist
-    protected void onCreate() {
-        
-        this.expiresAt = LocalDateTime.now().plusHours(24);
     }
 
     public boolean isExpired() {
@@ -50,8 +39,6 @@ public class Cart {
     }
 
     public void extendExpiration() {
-        
         this.expiresAt = LocalDateTime.now().plusHours(24);
     }
-
 }

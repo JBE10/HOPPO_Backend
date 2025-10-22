@@ -4,6 +4,7 @@ import com.example.HPPO_Backend.entity.*;
 import com.example.HPPO_Backend.entity.dto.ProductRequest;
 import com.example.HPPO_Backend.exceptions.ProductDuplicateException;
 import com.example.HPPO_Backend.repository.BrandRepository;
+import com.example.HPPO_Backend.repository.CartProductRepository;
 import com.example.HPPO_Backend.repository.CategoryRepository;
 import com.example.HPPO_Backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private BrandRepository brandRepository;
+
+    @Autowired
+    private CartProductRepository cartProductRepository;
 
     @Override
     public Page<Product> getProducts(PageRequest pageable) {
@@ -117,10 +121,16 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
+    @Transactional
     public void deleteProduct(Long productId) {
-        if (!productRepository.existsById(productId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productId);
-        }
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado con id: " + productId));
+        
+        // Eliminar todos los CartProduct que referencian este producto
+        List<CartProduct> cartProducts = cartProductRepository.findByProduct(product);
+        cartProductRepository.deleteAll(cartProducts);
+        
+        // Ahora eliminar el producto
         productRepository.deleteById(productId);
     }
     @Override

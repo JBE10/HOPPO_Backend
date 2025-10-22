@@ -85,7 +85,7 @@ public class OrdersController {
 
         Page<Order> myOrders = orderService.getMyOrders(user, pageRequest);
         Page<OrderResponse> dtoPage = myOrders.map(OrderResponse::fromOrder);
-        return ResponseEntity.ok(myOrders);
+        return ResponseEntity.ok(dtoPage);
     }
 
 }

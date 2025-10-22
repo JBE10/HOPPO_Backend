@@ -35,15 +35,22 @@ public class CartServiceImpl implements CartService {
         Page<Cart> page = cartRepository.findAll(pageable);
         LocalDateTime now = LocalDateTime.now();
 
-        // Filtrar los carritos válidos (no expirados)
-        List<Cart> valid = page.getContent().stream()
+        // Empties carts that are expired and returns page of (now) valid carts
+        List<Cart> processed = page.getContent().stream().map(cart -> {
+            if (cart.getExpiresAt() != null && cart.getExpiresAt().isBefore(now)) {
+                if (cart.getItems() != null) {
+                    cart.getItems().clear();
+                }
+                cart.setQuantity(0);
+                cart.extendExpiration();
+                return cartRepository.save(cart);
+            }
+            return cart;
+        }).collect(Collectors.toList());
+
+        List<Cart> valid = processed.stream()
                 .filter(cart -> cart.getExpiresAt() != null && cart.getExpiresAt().isAfter(now))
                 .collect(Collectors.toList());
-
-        // Eliminar los carritos expirados
-        page.getContent().stream()
-                .filter(cart -> cart.getExpiresAt() != null && cart.getExpiresAt().isBefore(now))
-                .forEach(cartRepository::delete);
 
         return new PageImpl<>(valid, pageable, valid.size());
     }
@@ -51,13 +58,16 @@ public class CartServiceImpl implements CartService {
     @Override
     public Optional<Cart> getCartById(Long cartId) {
         return cartRepository.findById(cartId)
-                .flatMap(cart -> {
-                    if (cart.getExpiresAt() == null || cart.getExpiresAt().isAfter(LocalDateTime.now())) {
-                        return Optional.of(cart);
-                    } else {
-                        cartRepository.delete(cart);
-                        return Optional.empty();
+                .map(cart -> {
+                    if (cart.getExpiresAt() != null && cart.getExpiresAt().isBefore(LocalDateTime.now())) {
+                        if (cart.getItems() != null) {
+                            cart.getItems().clear();
+                        }
+                        cart.setQuantity(0);
+                        cart.extendExpiration();
+                        return cartRepository.save(cart);
                     }
+                    return cart;
                 });
     }
 
@@ -73,10 +83,16 @@ public class CartServiceImpl implements CartService {
             return existingActive.get();
         }
 
-        // Si hay un carrito expirado, eliminarlo
+        // Si hay un carrito expirado, vaciarlo y re-extender su expiración
         Optional<Cart> existingExpired = cartRepository.findByUserId(cartRequest.getUserId());
         if (existingExpired.isPresent() && existingExpired.get().isExpired()) {
-            cartRepository.delete(existingExpired.get());
+            Cart expired = existingExpired.get();
+            if (expired.getItems() != null) {
+                expired.getItems().clear();
+            }
+            expired.setQuantity(0);
+            expired.extendExpiration();
+            return cartRepository.save(expired);
         }
 
         // Crear nuevo carrito
@@ -94,13 +110,16 @@ public class CartServiceImpl implements CartService {
     @Override
     public Optional<Cart> getCartByUserId(Long userId) {
         return cartRepository.findByUserId(userId)
-                .flatMap(cart -> {
-                    if (cart.getExpiresAt() == null || cart.getExpiresAt().isAfter(LocalDateTime.now())) {
-                        return Optional.of(cart);
-                    } else {
-                        cartRepository.delete(cart);
-                        return Optional.empty();
+                .map(cart -> {
+                    if (cart.getExpiresAt() != null && cart.getExpiresAt().isBefore(LocalDateTime.now())) {
+                        if (cart.getItems() != null) {
+                            cart.getItems().clear();
+                        }
+                        cart.setQuantity(0);
+                        cart.extendExpiration();
+                        return cartRepository.save(cart);
                     }
+                    return cart;
                 });
     }
 
@@ -123,15 +142,28 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public void cleanExpiredCarts() {
         List<Cart> expiredCarts = cartRepository.findExpiredCarts(LocalDateTime.now());
-        cartRepository.deleteAll(expiredCarts);
+        for (Cart cart : expiredCarts) {
+            if (cart.getItems() != null) {
+                cart.getItems().clear();
+            }
+            cart.setQuantity(0);
+            cart.extendExpiration();
+            cartRepository.save(cart);
+        }
     }
 
     @Override
     @Transactional
     public int deleteExpiredCarts() {
         List<Cart> expiredCarts = cartRepository.findExpiredCarts(LocalDateTime.now());
-        int count = expiredCarts.size();
-        cartRepository.deleteAll(expiredCarts);
-        return count;
+        for (Cart cart : expiredCarts) {
+            if (cart.getItems() != null) {
+                cart.getItems().clear();
+            }
+            cart.setQuantity(0);
+            cart.extendExpiration();
+            cartRepository.save(cart);
+        }
+        return expiredCarts.size();
     }
 }
