@@ -3,6 +3,7 @@ package com.example.HPPO_Backend.controllers.ecom;
 import com.example.HPPO_Backend.entity.Cart;
 import com.example.HPPO_Backend.entity.User;
 import com.example.HPPO_Backend.entity.dto.CartRequest;
+import com.example.HPPO_Backend.entity.dto.CartResponse;
 import com.example.HPPO_Backend.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,16 +38,18 @@ public class CartsController {
     }
 
     @GetMapping("/my-cart")
-    public ResponseEntity<Cart> getMyCart(@AuthenticationPrincipal User user) {
+    public ResponseEntity<CartResponse> getMyCart(@AuthenticationPrincipal User user) {
         // Buscar carrito activo (no expirado) del usuario
         Optional<Cart> result = this.cartService.getActiveCartByUserId(user.getId());
-        return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+        return result.map(cart -> ResponseEntity.ok(CartResponse.fromCart(cart)))
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @GetMapping({"/{cartId}"})
-    public ResponseEntity<Cart> getCartById(@PathVariable Long cartId) {
+    public ResponseEntity<CartResponse> getCartById(@PathVariable Long cartId) {
         Optional<Cart> result = this.cartService.getCartById(cartId);
-        return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+        return result.map(cart -> ResponseEntity.ok(CartResponse.fromCart(cart)))
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     /**
