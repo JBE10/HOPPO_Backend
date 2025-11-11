@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -60,5 +61,14 @@ public class ProductsController {
     public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/carousel")
+    public ResponseEntity<List<ProductResponse>> getCarouselProducts() {
+        List<Product> products = productService.getCarouselProducts();
+        List<ProductResponse> productResponses = products.stream()
+                .map(ProductResponse::fromProduct)
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(productResponses);
     }
 }

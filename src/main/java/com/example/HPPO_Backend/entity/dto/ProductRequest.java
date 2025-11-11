@@ -34,4 +34,6 @@ public class ProductRequest {
     private Long categoryId;
     
     private List<String> imageUrls;
+    
+    private Boolean showInCarousel = false;
 }

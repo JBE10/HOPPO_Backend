@@ -39,4 +39,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice,
             Pageable pageable);
+    
+    List<Product> findByShowInCarouselTrue();
 }

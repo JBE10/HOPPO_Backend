@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -66,6 +67,7 @@ public class ProductServiceImpl implements ProductService {
         product.setBrand(brand);
         product.setCategory(category);
         product.setDiscount(productRequest.getDiscount());
+        product.setShowInCarousel(productRequest.getShowInCarousel() != null ? productRequest.getShowInCarousel() : false);
 
 
 
@@ -101,6 +103,7 @@ public class ProductServiceImpl implements ProductService {
         product.setBrand(brand);
         product.setCategory(category);
         product.setDiscount(productRequest.getDiscount());
+        product.setShowInCarousel(productRequest.getShowInCarousel() != null ? productRequest.getShowInCarousel() : false);
 
 
         if (product.getImages() != null) {
@@ -154,5 +157,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<Product> getAvailableProductsByBrand(Long brandId, PageRequest pageRequest) {
         return productRepository.getAvailableProductsByBrand(brandId, pageRequest);
+    }
+
+    @Override
+    public List<Product> getCarouselProducts() {
+        return productRepository.findByShowInCarouselTrue();
     }
 }

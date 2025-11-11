@@ -4,6 +4,7 @@ import com.example.HPPO_Backend.entity.Product;
 import com.example.HPPO_Backend.entity.dto.ProductRequest;
 import com.example.HPPO_Backend.exceptions.ProductDuplicateException;
  
+import java.util.List;
 import java.util.Optional;
  
 import org.springframework.data.domain.Page;
@@ -21,4 +22,5 @@ public interface ProductService {
     Page<Product> searchAndFilterProducts(String name, Double minPrice, Double maxPrice, PageRequest pageRequest);
     Page<Product> getAvailableProductsByCategory(Long categoryId, PageRequest pageRequest);
     Page<Product> getAvailableProductsByBrand(Long brandId, PageRequest pageRequest);
+    List<Product> getCarouselProducts();
 }
