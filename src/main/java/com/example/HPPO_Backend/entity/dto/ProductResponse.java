@@ -20,7 +20,6 @@ public class ProductResponse {
     private BrandResponse brand;
     private CategoryResponse category;
     private List<ProductImageResponse> images;
-    private Boolean showInCarousel;
 
     public static ProductResponse fromProduct(Product product) {
         ProductResponse response = new ProductResponse();
@@ -47,8 +46,6 @@ public class ProductResponse {
                     .map(ProductImageResponse::fromProductImage)
                     .collect(Collectors.toList()));
         }
-        
-        response.setShowInCarousel(product.getShowInCarousel() != null ? product.getShowInCarousel() : false);
         
         return response;
     }

@@ -67,9 +67,6 @@ public class ProductServiceImpl implements ProductService {
         product.setBrand(brand);
         product.setCategory(category);
         product.setDiscount(productRequest.getDiscount());
-        product.setShowInCarousel(productRequest.getShowInCarousel() != null ? productRequest.getShowInCarousel() : false);
-
-
 
         if (productRequest.getImageUrls() != null && !productRequest.getImageUrls().isEmpty()) {
             List<ProductImage> images = productRequest.getImageUrls().stream()
@@ -77,7 +74,6 @@ public class ProductServiceImpl implements ProductService {
                     .collect(Collectors.toList());
             product.setImages(images);
         }
-
 
         return productRepository.save(product);
     }
@@ -103,10 +99,9 @@ public class ProductServiceImpl implements ProductService {
         product.setBrand(brand);
         product.setCategory(category);
         product.setDiscount(productRequest.getDiscount());
-        product.setShowInCarousel(productRequest.getShowInCarousel() != null ? productRequest.getShowInCarousel() : false);
-
 
         if (product.getImages() != null) {
+            
             product.getImages().clear();
         }
         if (productRequest.getImageUrls() != null && !productRequest.getImageUrls().isEmpty()) {
@@ -115,7 +110,6 @@ public class ProductServiceImpl implements ProductService {
                     .collect(Collectors.toList());
             product.getImages().addAll(newImages);
         }
-
 
         return productRepository.save(product);
     }
@@ -157,10 +151,5 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<Product> getAvailableProductsByBrand(Long brandId, PageRequest pageRequest) {
         return productRepository.getAvailableProductsByBrand(brandId, pageRequest);
-    }
-
-    @Override
-    public List<Product> getCarouselProducts() {
-        return productRepository.findByShowInCarouselTrue();
     }
 }

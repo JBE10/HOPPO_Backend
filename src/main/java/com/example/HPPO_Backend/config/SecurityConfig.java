@@ -40,7 +40,7 @@ public class SecurityConfig {
                                 // Endpoint para obtener perfil del usuario autenticado
                                 .requestMatchers(HttpMethod.GET, "/users/myuser").hasAnyRole("COMPRADOR", "VENDEDOR")
 
-                                .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/brands/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**", "/brands/**", "/carousel").permitAll()
                                 .requestMatchers(HttpMethod.POST,   "/products/**").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.PUT,    "/products/**").hasRole("VENDEDOR")
                                 .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole("VENDEDOR")
@@ -81,6 +81,9 @@ public class SecurityConfig {
 
                                     // Payment endpoints
                                     .requestMatchers(HttpMethod.POST, "/payments/**").hasRole("COMPRADOR")
+
+                                    // Admin carousel endpoints
+                                    .requestMatchers("/admin/carousel/**").hasRole("VENDEDOR")
 
                                     .anyRequest().authenticated()
                         )

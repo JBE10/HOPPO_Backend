@@ -22,5 +22,4 @@ public interface ProductService {
     Page<Product> searchAndFilterProducts(String name, Double minPrice, Double maxPrice, PageRequest pageRequest);
     Page<Product> getAvailableProductsByCategory(Long categoryId, PageRequest pageRequest);
     Page<Product> getAvailableProductsByBrand(Long brandId, PageRequest pageRequest);
-    List<Product> getCarouselProducts();
 }

@@ -62,13 +62,4 @@ public class ProductsController {
         productService.deleteProduct(productId);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/carousel")
-    public ResponseEntity<List<ProductResponse>> getCarouselProducts() {
-        List<Product> products = productService.getCarouselProducts();
-        List<ProductResponse> productResponses = products.stream()
-                .map(ProductResponse::fromProduct)
-                .collect(java.util.stream.Collectors.toList());
-        return ResponseEntity.ok(productResponses);
-    }
 }
