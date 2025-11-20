@@ -36,11 +36,13 @@ public class ProductServiceImpl implements ProductService {
     private CartProductRepository cartProductRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Product> getProducts(PageRequest pageable) {
         return productRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Product> getProductById(Long productId) {
         return productRepository.findById(productId);
     }
@@ -131,24 +133,29 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(productId);
     }
     @Override
+    @Transactional(readOnly = true)
     public Page<Product> getProductsByCategory(Long categoryId, PageRequest pageRequest) {
         return productRepository.getProductByCategory(categoryId, pageRequest);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Product> getProductsByBrand(Long brandId, PageRequest pageRequest) {
         return productRepository.getProductsByBrand(brandId, pageRequest);
     }
     @Override
+    @Transactional(readOnly = true)
     public Page<Product> searchAndFilterProducts(String name, Double minPrice, Double maxPrice, PageRequest pageRequest) {
         return productRepository.searchAndFilterProducts(name, minPrice, maxPrice, pageRequest);
     }
     
     @Override
+    @Transactional(readOnly = true)
     public Page<Product> getAvailableProductsByCategory(Long categoryId, PageRequest pageRequest) {
         return productRepository.getAvailableProductsByCategory(categoryId, pageRequest);
     }
     @Override
+    @Transactional(readOnly = true)
     public Page<Product> getAvailableProductsByBrand(Long brandId, PageRequest pageRequest) {
         return productRepository.getAvailableProductsByBrand(brandId, pageRequest);
     }

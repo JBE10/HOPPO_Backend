@@ -8,18 +8,17 @@ public class CarouselItemResponse {
     private Long id;
     private ProductResponse product;
     private Integer displayOrder;
-    private Boolean isActive;
-    private String customTitle;
-    private String customSubtitle;
     
     public static CarouselItemResponse fromCarouselItem(CarouselItem item) {
+        if (item == null) {
+            return null;
+        }
         CarouselItemResponse response = new CarouselItemResponse();
         response.setId(item.getId());
-        response.setProduct(ProductResponse.fromProduct(item.getProduct()));
+        if (item.getProduct() != null) {
+            response.setProduct(ProductResponse.fromProduct(item.getProduct()));
+        }
         response.setDisplayOrder(item.getDisplayOrder());
-        response.setIsActive(item.getIsActive());
-        response.setCustomTitle(item.getCustomTitle());
-        response.setCustomSubtitle(item.getCustomSubtitle());
         return response;
     }
 }
