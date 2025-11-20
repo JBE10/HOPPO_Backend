@@ -145,8 +145,8 @@ public class ProductServiceImpl implements ProductService {
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<Product> searchAndFilterProducts(String name, Double minPrice, Double maxPrice, PageRequest pageRequest) {
-        return productRepository.searchAndFilterProducts(name, minPrice, maxPrice, pageRequest);
+    public Page<Product> searchAndFilterProducts(String name, Double minPrice, Double maxPrice, boolean includeOutOfStock, PageRequest pageRequest) {
+        return productRepository.searchAndFilterProducts(name, minPrice, maxPrice, includeOutOfStock, pageRequest);
     }
     
     @Override

@@ -28,13 +28,14 @@ public class ProductsController {
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
+            @RequestParam(required = false) Integer size,
+            @RequestParam(defaultValue = "false") boolean includeOutOfStock) {
 
         PageRequest pageRequest = (page != null && size != null)
                 ? PageRequest.of(page, size)
                 : PageRequest.of(0, Integer.MAX_VALUE);
 
-        Page<Product> products = productService.searchAndFilterProducts(name, minPrice, maxPrice, pageRequest);
+        Page<Product> products = productService.searchAndFilterProducts(name, minPrice, maxPrice, includeOutOfStock, pageRequest);
         Page<ProductResponse> productResponses = products.map(ProductResponse::fromProduct);
         return ResponseEntity.ok(productResponses);
     }

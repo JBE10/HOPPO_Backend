@@ -19,7 +19,7 @@ public interface ProductService {
     Product updateProduct(Long productId, ProductRequest productRequest);
     Page<Product> getProductsByCategory(Long categoryId, PageRequest pageRequest);
     Page<Product> getProductsByBrand(Long brandId, PageRequest pageRequest);;
-    Page<Product> searchAndFilterProducts(String name, Double minPrice, Double maxPrice, PageRequest pageRequest);
+    Page<Product> searchAndFilterProducts(String name, Double minPrice, Double maxPrice, boolean includeOutOfStock, PageRequest pageRequest);
     Page<Product> getAvailableProductsByCategory(Long categoryId, PageRequest pageRequest);
     Page<Product> getAvailableProductsByBrand(Long brandId, PageRequest pageRequest);
 }

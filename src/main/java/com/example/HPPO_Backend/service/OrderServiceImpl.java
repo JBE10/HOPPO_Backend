@@ -4,6 +4,7 @@ import com.example.HPPO_Backend.entity.*;
 import com.example.HPPO_Backend.entity.dto.OrderRequest;
 import com.example.HPPO_Backend.repository.CartRepository;
 import com.example.HPPO_Backend.repository.OrderRepository;
+import com.example.HPPO_Backend.repository.ProductRepository;
 import com.example.HPPO_Backend.repository.UserRepository;
 
 import org.springframework.data.domain.PageRequest;
@@ -22,19 +23,24 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             UserRepository userRepository,
-                            CartRepository cartRepository) {
+                            CartRepository cartRepository,
+                            ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
+        this.productRepository = productRepository;
     }
 
+    @Transactional(readOnly = true)
     public Page<Order> getOrders(PageRequest pageable) {
-        return orderRepository.findAll(pageable);
+        return orderRepository.findAllWithItems(pageable);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Order> getOrderById(Long orderId) {
         return orderRepository.findById(orderId);
     }
@@ -103,9 +109,20 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Order cancelOrder(Long orderId, User user) {
-        Order order = orderRepository.findById(orderId)
+        // Cargar la orden con sus items y productos usando JOIN FETCH
+        Order order = orderRepository.findByIdWithItems(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Orden no encontrada"));
 
+        // Forzar la inicialización de la colección lazy si es necesario
+        if (order.getItems() != null) {
+            order.getItems().size(); // Esto fuerza la carga de la colección lazy
+            // También forzar la carga de los productos dentro de cada item
+            for (OrderItem item : order.getItems()) {
+                if (item.getProduct() != null) {
+                    item.getProduct().getName(); // Forzar la carga del producto
+                }
+            }
+        }
 
         if (!order.getUser().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permisos para cancelar esta orden");
@@ -115,8 +132,53 @@ public class OrderServiceImpl implements OrderService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "La orden ya ha sido cancelada");
         }
 
+        // Devolver el stock de todos los productos de la orden
+        if (order.getItems() != null && !order.getItems().isEmpty()) {
+            System.out.println("🔄 Devolviendo stock para " + order.getItems().size() + " items de la orden #" + orderId);
+            
+            for (OrderItem item : order.getItems()) {
+                if (item.getProduct() == null) {
+                    System.err.println("⚠️ Error: OrderItem tiene producto null");
+                    continue;
+                }
+                
+                Product product = item.getProduct();
+                Long productId = product.getId();
+                Integer quantity = item.getQuantity();
+                
+                if (productId == null || quantity == null) {
+                    System.err.println("⚠️ Error: Product ID o quantity es null");
+                    continue;
+                }
+                
+                System.out.println("📦 Procesando producto ID: " + productId + ", cantidad: " + quantity);
+                
+                // Cargar el producto actualizado desde la base de datos
+                Product currentProduct = productRepository.findById(productId)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, 
+                                "Producto no encontrado: " + productId));
+                
+                int oldStock = currentProduct.getStock();
+                int newStock = oldStock + quantity;
+                
+                System.out.println("📊 Stock anterior: " + oldStock + ", cantidad a devolver: " + quantity + ", stock nuevo: " + newStock);
+                
+                // Devolver el stock
+                currentProduct.setStock(newStock);
+                Product savedProduct = productRepository.saveAndFlush(currentProduct);
+                
+                System.out.println("✅ Stock devuelto para producto ID: " + productId + ", stock actual: " + savedProduct.getStock());
+            }
+        } else {
+            System.out.println("⚠️ La orden #" + orderId + " no tiene items o la lista está vacía. Items: " + (order.getItems() == null ? "null" : "empty"));
+        }
+
         order.setStatus(OrderStatus.CANCELLED);
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.saveAndFlush(order);
+        
+        System.out.println("✅ Orden #" + orderId + " cancelada exitosamente");
+        
+        return savedOrder;
     }
 
 
@@ -129,7 +191,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Order updateOrder(Long orderId, OrderRequest orderRequest, User user) {
-        Order order = orderRepository.findById(orderId)
+        // Cargar la orden con sus items y productos
+        Order order = orderRepository.findByIdWithItems(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Orden no encontrada"));
 
 
@@ -150,7 +213,28 @@ public class OrderServiceImpl implements OrderService {
 
 
         if (orderRequest.getStatus() != null) {
-            order.setStatus(orderRequest.getStatus());
+            OrderStatus oldStatus = order.getStatus();
+            OrderStatus newStatus = orderRequest.getStatus();
+            
+            // Si se está cambiando a CANCELLED, devolver el stock
+            if (oldStatus != OrderStatus.CANCELLED && newStatus == OrderStatus.CANCELLED) {
+                // Devolver el stock de todos los productos de la orden
+                if (order.getItems() != null && !order.getItems().isEmpty()) {
+                    for (OrderItem item : order.getItems()) {
+                        Product product = item.getProduct();
+                        // Cargar el producto actualizado desde la base de datos
+                        Product currentProduct = productRepository.findById(product.getId())
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, 
+                                        "Producto no encontrado: " + product.getId()));
+                        
+                        // Devolver el stock
+                        currentProduct.setStock(currentProduct.getStock() + item.getQuantity());
+                        productRepository.save(currentProduct);
+                    }
+                }
+            }
+            
+            order.setStatus(newStatus);
         }
 
         return orderRepository.save(order);
