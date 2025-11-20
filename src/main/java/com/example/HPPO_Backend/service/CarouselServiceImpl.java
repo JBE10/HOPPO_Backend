@@ -85,7 +85,7 @@ public class CarouselServiceImpl implements CarouselService {
         
         int removedOrder = item.getDisplayOrder();
         carouselItemRepository.delete(item);
-        
+            
         // Reordenar los items restantes
         List<CarouselItem> remainingItems = carouselItemRepository.findAllOrdered();
         for (CarouselItem remainingItem : remainingItems) {
