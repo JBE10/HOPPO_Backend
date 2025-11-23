@@ -41,7 +41,9 @@ public class CartProduct {
         return getOriginalTotalPrice() - getTotalPrice();
     }
 
+    
     public boolean hasDiscount() {
         return product != null && product.hasDiscount();
     }
+
 }

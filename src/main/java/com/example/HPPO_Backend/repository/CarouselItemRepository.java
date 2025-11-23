@@ -24,3 +24,4 @@ public interface CarouselItemRepository extends JpaRepository<CarouselItem, Long
     long count();
 }
 
+
