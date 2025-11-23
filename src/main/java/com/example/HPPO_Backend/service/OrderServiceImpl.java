@@ -79,6 +79,15 @@ public class OrderServiceImpl implements OrderService {
         double total = 0.0;
         for (CartProduct cartItem : cart.getItems()) {
             Product product = cartItem.getProduct();
+
+            // Validar que hay suficiente stock disponible
+            if (product.getStock() < cartItem.getQuantity()) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "Stock insuficiente para el producto: " + product.getName() +
+                        ". Stock disponible: " + product.getStock() +
+                        ", cantidad solicitada: " + cartItem.getQuantity());
+            }
+
             double priceAtPurchase = product.getPrice();
 
 
@@ -88,6 +97,9 @@ public class OrderServiceImpl implements OrderService {
             }
             total += priceAtPurchase * cartItem.getQuantity();
 
+            // Reducir el stock del producto
+            product.setStock(product.getStock() - cartItem.getQuantity());
+            productRepository.save(product);
 
             OrderItem orderItem = new OrderItem(product, cartItem.getQuantity(), priceAtPurchase, newOrder);
             newOrder.getItems().add(orderItem);
