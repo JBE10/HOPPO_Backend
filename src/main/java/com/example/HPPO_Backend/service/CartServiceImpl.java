@@ -35,7 +35,7 @@ public class CartServiceImpl implements CartService {
         Page<Cart> page = cartRepository.findAll(pageable);
         LocalDateTime now = LocalDateTime.now();
 
-        // Empties carts that are expired and returns page of (now) valid carts
+        
         List<Cart> processed = page.getContent().stream().map(cart -> {
             if (cart.getExpiresAt() != null && cart.getExpiresAt().isBefore(now)) {
                 if (cart.getItems() != null) {
@@ -83,7 +83,6 @@ public class CartServiceImpl implements CartService {
             return existingActive.get();
         }
 
-        // Si hay un carrito expirado, vaciarlo y re-extender su expiración
         Optional<Cart> existingExpired = cartRepository.findByUserId(cartRequest.getUserId());
         if (existingExpired.isPresent() && existingExpired.get().isExpired()) {
             Cart expired = existingExpired.get();
