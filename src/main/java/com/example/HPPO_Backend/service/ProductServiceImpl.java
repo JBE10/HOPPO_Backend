@@ -146,7 +146,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public Page<Product> searchAndFilterProducts(String name, Double minPrice, Double maxPrice, boolean includeOutOfStock, PageRequest pageRequest) {
-        return productRepository.searchAndFilterProducts(name, minPrice, maxPrice, includeOutOfStock, (Pageable) pageRequest);
+        // Si includeOutOfStock es true, minStock = 0 (incluye todos)
+        // Si includeOutOfStock es false, minStock = 1 (solo con stock > 0)
+        int minStock = includeOutOfStock ? 0 : 1;
+        return productRepository.searchAndFilterProductsWithMinStock(name, minPrice, maxPrice, minStock, (Pageable) pageRequest);
     }
     
     @Override

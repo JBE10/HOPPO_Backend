@@ -34,14 +34,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Page<Product> getProductByCategory(Long categoryId, PageRequest pageRequest);
     @Query("SELECT p FROM Product p WHERE " +
-            "(:includeOutOfStock = true OR p.stock > 0) AND " +
+            "(p.stock >= :minStock) AND " +
             "(:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
             "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
             "(:maxPrice IS NULL OR p.price <= :maxPrice)")
-    Page<Product> searchAndFilterProducts(
+    Page<Product> searchAndFilterProductsWithMinStock(
             @Param("name") String name,
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice,
-            @Param("includeOutOfStock") boolean includeOutOfStock,
+            @Param("minStock") int minStock,
             Pageable pageable);
 }

@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin/carousel")
-@org.springframework.context.annotation.Primary
 public class AdminCarouselController {
     
     @Autowired
@@ -88,4 +87,3 @@ public class AdminCarouselController {
         return ResponseEntity.ok(Map.of("count", count));
     }
 }
-
